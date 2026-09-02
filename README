@@ -1,0 +1,133 @@
+# Powerfy 🔌
+
+Powerfy is a native Android e-commerce app for electronics, built as an MVP with Jetpack Compose and modern Android architecture. It's a portfolio project demonstrating a full design-to-code workflow, from Figma to a working, API-driven app.
+
+<!-- Add a screenshot or GIF of the app here once you have one -->
+<!-- ![Powerfy screenshot](docs/screenshot.png) -->
+
+## Overview
+
+Powerfy lets users browse electronics (smartphones, laptops, tablets, and mobile accessories), view product details, manage favorites, and go through a full cart → checkout → payment → confirmation flow.
+
+- **Platform:** Android (min SDK 26 / Android 8.0)
+- **Language:** Kotlin
+- **UI:** Jetpack Compose
+- **Data source:** [DummyJSON](https://dummyjson.com/) (public REST API for prototyping)
+- **Status:** MVP in active development
+
+## Screens
+
+| # | Screen | Status |
+|---|--------|--------|
+| 00 | Splash | ✅ Implemented |
+| 00b | Intro | 🔜 Planned |
+| 01 | Login | 🔜 Planned |
+| 02 | Sign In | 🔜 Planned |
+| 03 | Home | 🔜 Planned |
+| 04 | Product Detail | 🔜 Planned |
+| 05 | Favorites | 🔜 Planned |
+| 06 | Cart | 🔜 Planned |
+| 07 | Checkout | 🔜 Planned |
+| 08 | Payment | 🔜 Planned |
+| 09 | Confirmation | 🔜 Planned |
+
+## Architecture
+
+The app follows **MVVM** with a clean separation between data, domain, and UI layers:
+
+```
+com.patriciagea.powerfy/
+├── data/
+│   ├── remote/          # Retrofit API interfaces + DTOs
+│   └── repository/      # Repository implementations
+├── domain/
+│   ├── model/            # Clean domain models (no DTOs leaking into UI)
+│   └── repository/       # Repository interfaces
+├── di/                    # Hilt modules (network, repositories)
+├── navigation/            # Navigation Compose graph and routes
+└── ui/
+    ├── theme/             # Design tokens (color, type, shape, spacing)
+    ├── components/        # Reusable composables (ProductCard, TopBar, etc.)
+    └── <feature>/          # One package per screen (splash, home, cart, ...)
+```
+
+**Why this structure:** it keeps networking and business logic independent of Compose, makes each screen testable in isolation, and mirrors the layering expected in professional Android codebases.
+
+## Tech stack
+
+| Purpose | Library |
+|---|---|
+| UI | Jetpack Compose + Material 3 |
+| Navigation | Navigation Compose |
+| Dependency injection | Hilt |
+| Networking | Retrofit + kotlinx.serialization |
+| Image loading | Coil |
+| Async | Kotlin Coroutines + Flow |
+
+## Design system
+
+Design tokens are defined in `ui/theme/` and sourced directly from the Figma file ("Powerfy - Rebuilt (Dev Ready)"):
+
+| Token | Value |
+|---|---|
+| Primary | `#159AD3` |
+| Background | `#FFFFFF` |
+| Surface / cards | `#F5F7FA` |
+| Secondary text | `#7A7A7A` |
+| Border | `#E5E8EC` |
+| Font | Roboto (Regular / Medium / Bold) |
+| Button radius | 12dp |
+| Spacing scale | 4 / 8 / 16 / 24 / 32 dp |
+
+## API
+
+Product data comes from [DummyJSON](https://dummyjson.com/), a free REST API for prototyping. Endpoints used:
+
+```
+GET /products                          # all products
+GET /products/category/smartphones     # smartphones
+GET /products/category/laptops         # laptops
+GET /products/category/tablets         # tablets
+GET /products/category/mobile-accessories  # accessories
+GET /products/search?q={query}         # search
+GET /products/{id}                     # product details
+```
+
+> **Note:** DummyJSON is a test/prototyping API. Write operations (create, update, delete) are simulated and are not actually persisted on the server.
+
+## Getting started
+
+### Prerequisites
+- Android Studio (latest stable)
+- JDK 17
+- An Android device or emulator running API 26+
+
+### Setup
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/PatriciaGea/Powerfy.git
+   ```
+2. Open the project in Android Studio and let Gradle sync.
+3. Run the app on an emulator or physical device (`Shift + F10`).
+
+No API key or `.env` configuration is required — DummyJSON is a public, unauthenticated API.
+
+## Roadmap
+
+- [ ] Implement remaining 10 screens
+- [ ] Persist cart/favorites locally (Room)
+- [ ] Persist user session (DataStore)
+- [ ] Unit tests for ViewModels and repositories
+- [ ] UI tests for critical flows (checkout)
+- [ ] Publish to Google Play (portfolio release)
+
+## Author
+
+**Patricia Gea** — Frontend/Android developer transitioning into tech, currently studying at Hyper Island (Stockholm).
+[GitHub](https://github.com/PatriciaGea)
+[email] patricia.gea@gmail.com
+[portifolio] https://patriciageadev.vercel.app
+
+## License
+
+This project is for portfolio purposes. Product data is provided by DummyJSON and does not represent a real store.
