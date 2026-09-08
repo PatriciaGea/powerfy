@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import se.tattooink.powerfy.domain.repository.AuthRepository
+import se.tattooink.powerfy.ui.components.NoAccountFoundException
 import javax.inject.Inject
 
 data class LoginUiState(
@@ -16,6 +17,7 @@ data class LoginUiState(
     val password: String = "",
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
+    val suggestSignUp: Boolean = false,
     val loginSucceeded: Boolean = false
 )
 
@@ -67,6 +69,16 @@ class LoginViewModel @Inject constructor(
                 onFailure = { error ->
                     _uiState.update { it.copy(isLoading = false, errorMessage = error.message ?: "Google login failed") }
                 }
+            )
+        }
+    }
+
+    fun showGoogleError(error: Throwable) {
+        val isNoAccount = error is NoAccountFoundException
+        _uiState.update {
+            it.copy(
+                errorMessage = if (isNoAccount) "No Google account found on this device." else (error.message ?: "Google sign-in failed"),
+                suggestSignUp = isNoAccount
             )
         }
     }
