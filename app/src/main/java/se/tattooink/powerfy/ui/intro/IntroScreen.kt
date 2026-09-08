@@ -44,8 +44,8 @@ private fun IntroScreen(onJoinClick: () -> Unit) {
             .background(Color.White)
             .background(overlayGradient)
             .padding(horizontal = 24.dp)
-            .padding(bottom = 48.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Bottom),
+            .padding(bottom = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
