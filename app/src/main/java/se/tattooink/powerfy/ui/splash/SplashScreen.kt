@@ -55,7 +55,7 @@ private fun SplashScreen() {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_powerfy_splash_logo),
+            painter = painterResource(id = R.drawable.logobig),
             contentDescription = null,
             modifier = Modifier.size(width = 214.dp, height = 256.dp)
         )
