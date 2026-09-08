@@ -1,6 +1,7 @@
 package se.tattooink.powerfy.data.firebase
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import se.tattooink.powerfy.domain.model.User
 import se.tattooink.powerfy.domain.repository.AuthRepository
@@ -46,6 +47,25 @@ class FirebaseAuthRepository @Inject constructor(
             val uid = result.user?.uid ?: return Result.failure(IllegalStateException("No UID returned"))
 
             Result.success(User(uid = uid, name = "Guest", email = ""))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun signInWithGoogle(idToken: String): Result<User> {
+        return try {
+            val credential = GoogleAuthProvider.getCredential(idToken, null)
+            val result = firebaseAuth.signInWithCredential(credential).await()
+            val firebaseUser = result.user ?: return Result.failure(IllegalStateException("No user returned"))
+
+            val uid = firebaseUser.uid
+            val name = firebaseUser.displayName ?: ""
+            val email = firebaseUser.email ?: ""
+
+            val userData = mapOf("name" to name, "email" to email)
+            firestore.collection("users").document(uid).set(userData).await()
+
+            Result.success(User(uid = uid, name = name, email = email))
         } catch (e: Exception) {
             Result.failure(e)
         }
