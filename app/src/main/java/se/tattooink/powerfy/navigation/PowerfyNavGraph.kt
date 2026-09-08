@@ -51,6 +51,9 @@ fun PowerfyNavGraph(navController: NavHostController = rememberNavController()) 
                     navController.navigate(PowerfyDestination.Home.route) {
                         popUpTo(PowerfyDestination.Intro.route) { inclusive = true }
                     }
+                },
+                onSignUpClick = {
+                    navController.navigate(PowerfyDestination.SignIn.route)
                 }
             )
         }

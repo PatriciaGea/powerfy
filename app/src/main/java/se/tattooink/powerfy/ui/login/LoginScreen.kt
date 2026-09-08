@@ -2,6 +2,7 @@ package se.tattooink.powerfy.ui.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,6 +47,7 @@ import se.tattooink.powerfy.ui.theme.PowerfyTextSecondary
 @Composable
 fun LoginRoute(
     onLoginSuccess: () -> Unit,
+    onSignUpClick: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -65,11 +68,14 @@ fun LoginRoute(
         onGoogleClick = {
             coroutineScope.launch {
                 val tokenResult = requestGoogleIdToken(context)
-                tokenResult.onSuccess { idToken ->
-                    viewModel.loginWithGoogle(idToken)
-                }
+                tokenResult.fold(
+                    onSuccess = { idToken -> viewModel.loginWithGoogle(idToken) },
+                    onFailure = { error -> viewModel.showGoogleError(error) }
+                )
             }
-        }
+        },
+        suggestSignUp = uiState.suggestSignUp,
+        onSignUpClick = onSignUpClick
     )
 }
 
@@ -81,7 +87,9 @@ private fun LoginScreen(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLoginClick: () -> Unit,
-    onGoogleClick: () -> Unit
+    onGoogleClick: () -> Unit,
+    suggestSignUp: Boolean,
+    onSignUpClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -91,16 +99,16 @@ private fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(230.dp)
+                .height(200.dp)
                 .background(PowerfyPrimary)
                 .padding(top = 15.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
-        )  {
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.logobig),
                 contentDescription = null,
-                modifier = Modifier.height(90.dp)
+                modifier = Modifier.height(80.dp)
             )
         }
 
@@ -111,8 +119,8 @@ private fun LoginScreen(
                 .offset(y = (-24).dp)
                 .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
                 .background(Color.White)
-                .padding(34.dp),
-            verticalArrangement = Arrangement.spacedBy(26.dp)
+                .padding(horizontal = 34.dp, vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
                 text = "Welcome back",
@@ -120,7 +128,6 @@ private fun LoginScreen(
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-
 
             Text(
                 text = "Log in to continue shopping the best deals in electronics.",
@@ -145,16 +152,8 @@ private fun LoginScreen(
                 isPassword = true
             )
 
-            if (errorMessage != null) {
-                Text(
-                    text = errorMessage,
-                    fontSize = 12.sp,
-                    color = Color.Red
-                )
-            }
-
             Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 PrimaryButton(
                     text = "Log In",
@@ -173,34 +172,64 @@ private fun LoginScreen(
                 }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            Column(
+                modifier = Modifier.padding(vertical = 8.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(1.dp)
-                        .background(PowerfyBorder)
-                )
-                Text(
-                    text = "or continue with",
-                    fontSize = 11.sp,
-                    color = PowerfyTextSecondary
-                )
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(1.dp)
-                        .background(PowerfyBorder)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(1.dp)
+                            .background(PowerfyBorder)
+                    )
+                    Text(
+                        text = "or continue with",
+                        fontSize = 11.sp,
+                        color = PowerfyTextSecondary
+                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(1.dp)
+                            .background(PowerfyBorder)
+                    )
+                }
             }
 
             SecondaryButton(
                 text = "Continue with Google",
                 onClick = onGoogleClick
             )
+
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage,
+                    fontSize = 12.sp,
+                    color = Color.Red,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            if (suggestSignUp) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onSignUpClick),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Don't have an account? Sign Up",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = PowerfyPrimary
+                    )
+                }
+            }
         }
     }
 }
