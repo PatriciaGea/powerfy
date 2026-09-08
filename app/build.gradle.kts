@@ -6,7 +6,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
     id("org.jetbrains.kotlin.plugin.serialization")
-    id("com.google.gms.google-services")
+   // id("com.google.gms.google-services")
 }
 
 val stripeKey: String = project.rootProject.file("local.properties").let { file ->
