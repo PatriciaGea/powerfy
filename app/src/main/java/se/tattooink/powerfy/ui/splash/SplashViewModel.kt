@@ -38,6 +38,6 @@ class SplashViewModel @Inject constructor() : ViewModel() {
     }
 
     companion object {
-        private const val SPLASH_DELAY_MS = 1500L
+        private const val SPLASH_DELAY_MS = 4500L
     }
 }
