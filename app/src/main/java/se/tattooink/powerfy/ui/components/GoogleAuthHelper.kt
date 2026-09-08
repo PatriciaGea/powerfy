@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import se.tattooink.powerfy.BuildConfig
@@ -24,7 +25,11 @@ suspend fun requestGoogleIdToken(context: Context): Result<String> {
 
         val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(result.credential.data)
         Result.success(googleIdTokenCredential.idToken)
+    } catch (e: NoCredentialException) {
+        Result.failure(NoAccountFoundException())
     } catch (e: GetCredentialException) {
         Result.failure(e)
     }
 }
+
+class NoAccountFoundException : Exception("No Google account found on this device")
