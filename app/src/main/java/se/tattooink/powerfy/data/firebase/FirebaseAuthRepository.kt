@@ -40,6 +40,17 @@ class FirebaseAuthRepository @Inject constructor(
         }
     }
 
+    override suspend fun signInAnonymously(): Result<User> {
+        return try {
+            val result = firebaseAuth.signInAnonymously().await()
+            val uid = result.user?.uid ?: return Result.failure(IllegalStateException("No UID returned"))
+
+            Result.success(User(uid = uid, name = "Guest", email = ""))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun signOut() {
         firebaseAuth.signOut()
     }
