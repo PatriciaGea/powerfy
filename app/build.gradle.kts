@@ -9,12 +9,12 @@ plugins {
     id("com.google.gms.google-services")
 }
 
-val stripeKey: String = project.rootProject.file("local.properties").let { file ->
-    if (file.exists()) {
-        val props = Properties()
-        props.load(file.inputStream())
-        props.getProperty("STRIPE_PUBLISHABLE_KEY", "")
-    } else ""
+fun readLocalProperty(key: String): String {
+    val propertiesFile = rootProject.file("local.properties")
+    if (!propertiesFile.exists()) return ""
+    val properties = Properties()
+    properties.load(propertiesFile.inputStream())
+    return properties.getProperty(key, "")
 }
 
 android {
@@ -30,7 +30,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "STRIPE_PUBLISHABLE_KEY", "\"$stripeKey\"")
+        buildConfigField("String", "STRIPE_PUBLISHABLE_KEY", "\"${readLocalProperty("STRIPE_PUBLISHABLE_KEY")}\"")
+        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"${readLocalProperty("GOOGLE_WEB_CLIENT_ID")}\"")
     }
 
     buildTypes {
@@ -59,6 +60,9 @@ kotlin {
 }
 
 dependencies {
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     implementation("androidx.compose.material:material-icons-core")
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
