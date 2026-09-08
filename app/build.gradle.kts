@@ -59,6 +59,7 @@ kotlin {
 }
 
 dependencies {
+    implementation("androidx.compose.material:material-icons-core")
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
