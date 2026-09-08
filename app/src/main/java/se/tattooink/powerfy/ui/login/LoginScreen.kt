@@ -136,9 +136,15 @@ private fun LoginScreen(
                 )
             }
 
+
+
+            PrimaryButton(
+                text = "Log In",
+                onClick = onLoginClick
+            )
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = "Forgot password?",
@@ -147,12 +153,6 @@ private fun LoginScreen(
                     color = PowerfyPrimary
                 )
             }
-
-            PrimaryButton(
-                text = "Log In",
-                onClick = onLoginClick
-            )
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
