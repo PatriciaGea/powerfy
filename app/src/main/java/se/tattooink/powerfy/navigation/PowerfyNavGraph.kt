@@ -97,6 +97,9 @@ fun PowerfyNavGraph(navController: NavHostController = rememberNavController()) 
                 },
                 onFavoriteIconClick = {
                     navController.navigate(PowerfyDestination.Favorites.route)
+                },
+                onCartIconClick = {
+                    navController.navigate(PowerfyDestination.Cart.route)
                 }
             )
         }
@@ -130,7 +133,9 @@ fun PowerfyNavGraph(navController: NavHostController = rememberNavController()) 
                     navController.navigate(PowerfyDestination.ProductDetail.createRoute(productId))
                 },
                 onFavoriteIconClick = { navController.popBackStack() },
-                onCartClick = {},
+                onCartClick = {
+                    navController.navigate(PowerfyDestination.Cart.route)
+                },
                 onNavigateToProfile = {
                     navController.navigate(PowerfyDestination.Profile.route)
                 },
@@ -139,6 +144,19 @@ fun PowerfyNavGraph(navController: NavHostController = rememberNavController()) 
                         popUpTo(PowerfyDestination.Home.route) { inclusive = true }
                     }
                 }
+            )
+        }
+
+        composable(PowerfyDestination.Cart.route) {
+            se.tattooink.powerfy.ui.cart.CartRoute(
+                isLoggedIn = true,
+                onFavoriteIconClick = {
+                    navController.navigate(PowerfyDestination.Favorites.route)
+                },
+                onProfileClick = {
+                    navController.navigate(PowerfyDestination.Profile.route)
+                },
+                onCheckoutClick = {}
             )
         }
     }
