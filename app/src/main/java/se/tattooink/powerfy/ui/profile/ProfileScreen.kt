@@ -28,8 +28,8 @@ import se.tattooink.powerfy.ui.components.BackButton
 import se.tattooink.powerfy.ui.theme.PowerfyPrimary
 import se.tattooink.powerfy.ui.theme.PowerfyTextSecondary
 
-private val LogoutRed = Color(0xFFF92626)
-private val LogoutRedBorder = Color(0xFFD60909)
+private val LogoutRed = Color(0xFFFF5722)
+private val LogoutRedBorder = Color(0xFFF44336)
 
 @Composable
 fun ProfileRoute(

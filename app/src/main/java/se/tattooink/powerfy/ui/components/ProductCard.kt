@@ -102,7 +102,7 @@ fun ProductCard(
                 modifier = Modifier
                     .size(24.dp)
                     .clip(CircleShape)
-                    .background(if (isFavorite) Color(0xFFE53935) else Color(0xFF8C8C94)),
+                    .background(if (isFavorite) Color(0xFFFF8026) else Color(0xFF8C8C94)),
                 contentAlignment = Alignment.Center
             ) {
                 IconButton(onClick = onFavoriteClick, modifier = Modifier.size(24.dp)) {
