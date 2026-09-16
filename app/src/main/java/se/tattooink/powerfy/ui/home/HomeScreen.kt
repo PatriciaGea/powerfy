@@ -33,6 +33,7 @@ fun HomeRoute(
     onNavigateToProfile: () -> Unit,
     onProductClick: (Int) -> Unit,
     onFavoriteIconClick: () -> Unit,
+    onCartIconClick: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -45,7 +46,9 @@ fun HomeRoute(
         productsErrorMessage = uiState.productsErrorMessage,
         onProductClick = onProductClick,
         onFavoriteClick = viewModel::toggleFavorite,
+        onAddToCartClick = viewModel::addToCart,
         onFavoriteIconClick = onFavoriteIconClick,
+        onCartIconClick = onCartIconClick,
         onProfileClick = {
             if (uiState.isLoggedIn) {
                 onNavigateToProfile()
@@ -65,7 +68,9 @@ private fun HomeScreen(
     productsErrorMessage: String?,
     onProductClick: (Int) -> Unit,
     onFavoriteClick: (Int) -> Unit,
+    onAddToCartClick: (Int) -> Unit,
     onFavoriteIconClick: () -> Unit,
+    onCartIconClick: () -> Unit,
     onProfileClick: () -> Unit
 ) {
     Column(
@@ -76,7 +81,7 @@ private fun HomeScreen(
         TopBar(
             isLoggedIn = isLoggedIn,
             onFavoriteClick = onFavoriteIconClick,
-            onCartClick = {},
+            onCartClick = onCartIconClick,
             onProfileClick = onProfileClick
         )
 
@@ -127,7 +132,7 @@ private fun HomeScreen(
                             product = product,
                             onClick = { onProductClick(product.id) },
                             onFavoriteClick = { onFavoriteClick(product.id) },
-                            onAddToCartClick = {},
+                            onAddToCartClick = { onAddToCartClick(product.id) },
                             isFavorite = product.id in favoriteIds
                         )
                     }

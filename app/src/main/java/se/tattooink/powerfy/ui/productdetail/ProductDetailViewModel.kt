@@ -23,7 +23,8 @@ data class ProductDetailUiState(
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val productRepository: ProductRepository
+    private val productRepository: ProductRepository,
+    private val cartRepository: se.tattooink.powerfy.domain.repository.CartRepository
 ) : ViewModel() {
 
     private val productId: Int = checkNotNull(savedStateHandle["productId"])
@@ -61,6 +62,12 @@ class ProductDetailViewModel @Inject constructor(
                 val related = products.filter { it.id != excludeId }.take(2)
                 _uiState.update { it.copy(relatedProducts = related) }
             }
+        }
+    }
+    fun addToCart() {
+        val currentProduct = _uiState.value.product ?: return
+        viewModelScope.launch {
+            cartRepository.addToCart(currentProduct.id)
         }
     }
 }

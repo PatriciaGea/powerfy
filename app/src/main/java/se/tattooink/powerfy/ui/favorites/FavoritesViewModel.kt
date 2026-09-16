@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import se.tattooink.powerfy.domain.model.Product
 import se.tattooink.powerfy.domain.repository.AuthRepository
+import se.tattooink.powerfy.domain.repository.CartRepository
 import se.tattooink.powerfy.domain.repository.FavoriteRepository
 import se.tattooink.powerfy.domain.repository.ProductRepository
 import javax.inject.Inject
@@ -24,7 +25,8 @@ data class FavoritesUiState(
 class FavoritesViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val productRepository: ProductRepository,
-    private val favoriteRepository: FavoriteRepository
+    private val favoriteRepository: FavoriteRepository,
+    private val cartRepository: CartRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(run {
@@ -55,6 +57,12 @@ class FavoritesViewModel @Inject constructor(
     fun toggleFavorite(productId: Int) {
         viewModelScope.launch {
             favoriteRepository.toggleFavorite(productId)
+        }
+    }
+
+    fun addToCart(productId: Int) {
+        viewModelScope.launch {
+            cartRepository.addToCart(productId)
         }
     }
 }

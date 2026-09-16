@@ -1,15 +1,16 @@
 package se.tattooink.powerfy.ui.favorites
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,6 +45,7 @@ fun FavoritesRoute(
         favoriteProducts = uiState.favoriteProducts,
         onProductClick = onProductClick,
         onFavoriteClick = viewModel::toggleFavorite,
+        onAddToCartClick = viewModel::addToCart,
         onFavoriteIconClick = onFavoriteIconClick,
         onCartClick = onCartClick,
         onProfileClick = {
@@ -62,6 +65,7 @@ private fun FavoritesScreen(
     favoriteProducts: List<Product>,
     onProductClick: (Int) -> Unit,
     onFavoriteClick: (Int) -> Unit,
+    onAddToCartClick: (Int) -> Unit,
     onFavoriteIconClick: () -> Unit,
     onCartClick: () -> Unit,
     onProfileClick: () -> Unit
@@ -98,11 +102,11 @@ private fun FavoritesScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(2) }) {
+                    item(span = { GridItemSpan(2) }) {
                         Text(
                             text = "Favorites",
                             fontSize = 16.sp,
-                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                            fontWeight = FontWeight.Bold,
                             color = Color.Black,
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
@@ -113,7 +117,7 @@ private fun FavoritesScreen(
                             product = product,
                             onClick = { onProductClick(product.id) },
                             onFavoriteClick = { onFavoriteClick(product.id) },
-                            onAddToCartClick = {},
+                            onAddToCartClick = { onAddToCartClick(product.id) },
                             isFavorite = true
                         )
                     }

@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -52,7 +50,8 @@ fun ProductDetailRoute(
         relatedProducts = uiState.relatedProducts,
         errorMessage = uiState.errorMessage,
         onBackClick = onBackClick,
-        onProductClick = onProductClick
+        onProductClick = onProductClick,
+        onAddToCartClick = viewModel::addToCart
     )
 }
 
@@ -63,7 +62,8 @@ private fun ProductDetailScreen(
     relatedProducts: List<Product>,
     errorMessage: String?,
     onBackClick: () -> Unit,
-    onProductClick: (Int) -> Unit
+    onProductClick: (Int) -> Unit,
+    onAddToCartClick: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
         when {
@@ -129,7 +129,7 @@ private fun ProductDetailScreen(
                         color = Color.Black
                     )
 
-                    PrimaryButton(text = "ADD TO CART", onClick = {})
+                    PrimaryButton(text = "ADD TO CART", onClick = onAddToCartClick)
 
                     if (relatedProducts.isNotEmpty()) {
                         Text(
@@ -148,15 +148,16 @@ private fun ProductDetailScreen(
                                     product = related,
                                     onClick = { onProductClick(related.id) },
                                     onFavoriteClick = {},
-                                    onAddToCartClick = {},
+                                    onAddToCartClick = { onProductClick(related.id) },
                                     modifier = Modifier.weight(1f)
                                 )
                             }
                         }
                     }
+
+                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(32.dp))
                 }
             }
         }
     }
-    androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(32.dp))
 }
