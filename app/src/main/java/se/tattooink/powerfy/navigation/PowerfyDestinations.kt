@@ -6,6 +6,7 @@ sealed class PowerfyDestination(val route: String) {
     data object Login : PowerfyDestination("login")
     data object SignIn : PowerfyDestination("sign_in")
     data object Home : PowerfyDestination("home")
+    data object Profile : PowerfyDestination("profile")
     data object ProductDetail : PowerfyDestination("product_detail/{productId}") {
         fun createRoute(productId: Int) = "product_detail/$productId"
     }

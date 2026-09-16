@@ -1,13 +1,14 @@
 package se.tattooink.powerfy.navigation
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import se.tattooink.powerfy.ui.home.HomeRoute
 import se.tattooink.powerfy.ui.intro.IntroRoute
 import se.tattooink.powerfy.ui.login.LoginRoute
+import se.tattooink.powerfy.ui.profile.ProfileRoute
 import se.tattooink.powerfy.ui.signup.SignUpRoute
 import se.tattooink.powerfy.ui.splash.SplashRoute
 
@@ -77,6 +78,28 @@ fun PowerfyNavGraph(navController: NavHostController = rememberNavController()) 
             )
         }
 
-        composable(PowerfyDestination.Home.route) { Text("Home screen — próxima etapa") }
-    }
+        composable(PowerfyDestination.Home.route) {
+            HomeRoute(
+                onNavigateToIntro = {
+                    navController.navigate(PowerfyDestination.Intro.route) {
+                        popUpTo(PowerfyDestination.Home.route) { inclusive = true }
+                    }
+                },
+                onNavigateToProfile = {
+                    navController.navigate(PowerfyDestination.Profile.route)
+                }
+            )
+        }
+
+        composable(PowerfyDestination.Profile.route) {
+            ProfileRoute(
+                onBackClick = { navController.popBackStack() },
+                onLoggedOut = {
+                    navController.navigate(PowerfyDestination.Intro.route) {
+                        popUpTo(PowerfyDestination.Home.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        }    
 }
