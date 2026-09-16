@@ -23,7 +23,9 @@ object DatabaseModule {
             context,
             PowerfyDatabase::class.java,
             "powerfy_database"
-        ).build()
+        )
+            .addMigrations(se.tattooink.powerfy.data.local.MIGRATION_1_2)
+            .build()
     }
 
     @Provides
