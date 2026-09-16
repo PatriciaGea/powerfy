@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import se.tattooink.powerfy.ui.intro.IntroRoute
 import se.tattooink.powerfy.ui.login.LoginRoute
+import se.tattooink.powerfy.ui.signup.SignUpRoute
 import se.tattooink.powerfy.ui.splash.SplashRoute
 
 @Composable
@@ -58,7 +59,24 @@ fun PowerfyNavGraph(navController: NavHostController = rememberNavController()) 
             )
         }
 
-        composable(PowerfyDestination.SignIn.route) { Text("Sign In screen — próxima etapa") }
+        composable(PowerfyDestination.SignIn.route) {
+            SignUpRoute(
+                onSignUpSuccess = {
+                    navController.navigate(PowerfyDestination.Home.route) {
+                        popUpTo(PowerfyDestination.Intro.route) { inclusive = true }
+                    }
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onLoginClick = {
+                    navController.navigate(PowerfyDestination.Login.route) {
+                        popUpTo(PowerfyDestination.SignIn.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(PowerfyDestination.Home.route) { Text("Home screen — próxima etapa") }
     }
 }
