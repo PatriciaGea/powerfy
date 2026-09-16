@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import se.tattooink.powerfy.domain.repository.AuthRepository
 import javax.inject.Inject
 
 sealed interface SplashNavigationEvent {
@@ -16,7 +17,9 @@ sealed interface SplashNavigationEvent {
 }
 
 @HiltViewModel
-class SplashViewModel @Inject constructor() : ViewModel() {
+class SplashViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     private val _navigationEvent = MutableStateFlow<SplashNavigationEvent?>(null)
     val navigationEvent: StateFlow<SplashNavigationEvent?> = _navigationEvent.asStateFlow()
@@ -24,17 +27,13 @@ class SplashViewModel @Inject constructor() : ViewModel() {
     init {
         viewModelScope.launch {
             delay(SPLASH_DELAY_MS)
-            val isUserLoggedIn = checkUserSession()
-            _navigationEvent.value = if (isUserLoggedIn) {
+            val hasSession = authRepository.getCurrentUser() != null
+            _navigationEvent.value = if (hasSession) {
                 SplashNavigationEvent.ToHome
             } else {
                 SplashNavigationEvent.ToIntro
             }
         }
-    }
-
-    private fun checkUserSession(): Boolean {
-        return false
     }
 
     companion object {

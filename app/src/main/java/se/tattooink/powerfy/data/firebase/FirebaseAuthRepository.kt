@@ -21,7 +21,7 @@ class FirebaseAuthRepository @Inject constructor(
             val userData = mapOf("name" to name, "email" to email)
             firestore.collection("users").document(uid).set(userData).await()
 
-            Result.success(User(uid = uid, name = name, email = email))
+            Result.success(User(uid = uid, name = name, email = email, isAnonymous = false))
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -35,7 +35,7 @@ class FirebaseAuthRepository @Inject constructor(
             val doc = firestore.collection("users").document(uid).get().await()
             val name = doc.getString("name") ?: ""
 
-            Result.success(User(uid = uid, name = name, email = email))
+            Result.success(User(uid = uid, name = name, email = email, isAnonymous = false))
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -46,7 +46,7 @@ class FirebaseAuthRepository @Inject constructor(
             val result = firebaseAuth.signInAnonymously().await()
             val uid = result.user?.uid ?: return Result.failure(IllegalStateException("No UID returned"))
 
-            Result.success(User(uid = uid, name = "Guest", email = ""))
+            Result.success(User(uid = uid, name = "Guest", email = "", isAnonymous = true))
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -65,7 +65,7 @@ class FirebaseAuthRepository @Inject constructor(
             val userData = mapOf("name" to name, "email" to email)
             firestore.collection("users").document(uid).set(userData).await()
 
-            Result.success(User(uid = uid, name = name, email = email))
+            Result.success(User(uid = uid, name = name, email = email, isAnonymous = false))
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -80,7 +80,8 @@ class FirebaseAuthRepository @Inject constructor(
         return User(
             uid = firebaseUser.uid,
             name = firebaseUser.displayName ?: "",
-            email = firebaseUser.email ?: ""
+            email = firebaseUser.email ?: "",
+            isAnonymous = firebaseUser.isAnonymous
         )
     }
 }
