@@ -114,7 +114,7 @@ private fun SignUpScreen(
         )
 
         Text(
-            text = "Join Powerfy",
+            text = "Join Powerfy - Sign up",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = PowerfyPrimary
