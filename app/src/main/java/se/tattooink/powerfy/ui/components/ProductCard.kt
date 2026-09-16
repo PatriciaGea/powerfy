@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
@@ -101,12 +102,12 @@ fun ProductCard(
                 modifier = Modifier
                     .size(24.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF8C8C94)),
+                    .background(if (isFavorite) Color(0xFFE53935) else Color(0xFF8C8C94)),
                 contentAlignment = Alignment.Center
             ) {
                 IconButton(onClick = onFavoriteClick, modifier = Modifier.size(24.dp)) {
                     Icon(
-                        imageVector = Icons.Filled.FavoriteBorder,
+                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                         contentDescription = "Favorite",
                         tint = Color.White,
                         modifier = Modifier.size(14.dp)

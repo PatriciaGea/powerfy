@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import se.tattooink.powerfy.domain.model.Product
 import se.tattooink.powerfy.domain.repository.AuthRepository
+import se.tattooink.powerfy.domain.repository.FavoriteRepository
 import se.tattooink.powerfy.domain.repository.ProductRepository
 import javax.inject.Inject
 
@@ -18,6 +19,7 @@ data class HomeUiState(
     val userName: String = "",
     val userEmail: String = "",
     val products: List<Product> = emptyList(),
+    val favoriteIds: Set<Int> = emptySet(),
     val isLoadingProducts: Boolean = true,
     val productsErrorMessage: String? = null
 )
@@ -25,7 +27,8 @@ data class HomeUiState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val productRepository: ProductRepository
+    private val productRepository: ProductRepository,
+    private val favoriteRepository: FavoriteRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(run {
@@ -40,6 +43,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         loadProducts()
+        observeFavorites()
     }
 
     private fun loadProducts() {
@@ -56,6 +60,20 @@ class HomeViewModel @Inject constructor(
                     }
                 }
             )
+        }
+    }
+
+    private fun observeFavorites() {
+        viewModelScope.launch {
+            favoriteRepository.getFavoriteIds().collect { ids ->
+                _uiState.update { it.copy(favoriteIds = ids.toSet()) }
+            }
+        }
+    }
+
+    fun toggleFavorite(productId: Int) {
+        viewModelScope.launch {
+            favoriteRepository.toggleFavorite(productId)
         }
     }
 }

@@ -40,9 +40,11 @@ fun HomeRoute(
     HomeScreen(
         isLoggedIn = uiState.isLoggedIn,
         products = uiState.products,
+        favoriteIds = uiState.favoriteIds,
         isLoadingProducts = uiState.isLoadingProducts,
         productsErrorMessage = uiState.productsErrorMessage,
         onProductClick = onProductClick,
+        onFavoriteClick = viewModel::toggleFavorite,
         onProfileClick = {
             if (uiState.isLoggedIn) {
                 onNavigateToProfile()
@@ -57,9 +59,11 @@ fun HomeRoute(
 private fun HomeScreen(
     isLoggedIn: Boolean,
     products: List<Product>,
+    favoriteIds: Set<Int>,
     isLoadingProducts: Boolean,
     productsErrorMessage: String?,
     onProductClick: (Int) -> Unit,
+    onFavoriteClick: (Int) -> Unit,
     onProfileClick: () -> Unit
 ) {
     Column(
@@ -120,8 +124,9 @@ private fun HomeScreen(
                         ProductCard(
                             product = product,
                             onClick = { onProductClick(product.id) },
-                            onFavoriteClick = {},
-                            onAddToCartClick = {}
+                            onFavoriteClick = { onFavoriteClick(product.id) },
+                            onAddToCartClick = {},
+                            isFavorite = product.id in favoriteIds
                         )
                     }
                 }
