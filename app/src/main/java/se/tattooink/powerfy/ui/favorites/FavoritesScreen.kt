@@ -1,15 +1,15 @@
-package se.tattooink.powerfy.ui.home
+package se.tattooink.powerfy.ui.favorites
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,34 +18,33 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.tattooink.powerfy.domain.model.Product
 import se.tattooink.powerfy.ui.components.ProductCard
-import se.tattooink.powerfy.ui.components.SearchBar
 import se.tattooink.powerfy.ui.components.TopBar
+import se.tattooink.powerfy.ui.theme.PowerfyTextSecondary
 
 @Composable
-fun HomeRoute(
-    onNavigateToIntro: () -> Unit,
-    onNavigateToProfile: () -> Unit,
+fun FavoritesRoute(
     onProductClick: (Int) -> Unit,
     onFavoriteIconClick: () -> Unit,
-    viewModel: HomeViewModel = hiltViewModel()
+    onCartClick: () -> Unit,
+    onNavigateToProfile: () -> Unit,
+    onNavigateToIntro: () -> Unit,
+    viewModel: FavoritesViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    HomeScreen(
+    FavoritesScreen(
         isLoggedIn = uiState.isLoggedIn,
-        products = uiState.products,
-        favoriteIds = uiState.favoriteIds,
-        isLoadingProducts = uiState.isLoadingProducts,
-        productsErrorMessage = uiState.productsErrorMessage,
+        isLoading = uiState.isLoading,
+        favoriteProducts = uiState.favoriteProducts,
         onProductClick = onProductClick,
         onFavoriteClick = viewModel::toggleFavorite,
         onFavoriteIconClick = onFavoriteIconClick,
+        onCartClick = onCartClick,
         onProfileClick = {
             if (uiState.isLoggedIn) {
                 onNavigateToProfile()
@@ -57,48 +56,37 @@ fun HomeRoute(
 }
 
 @Composable
-private fun HomeScreen(
+private fun FavoritesScreen(
     isLoggedIn: Boolean,
-    products: List<Product>,
-    favoriteIds: Set<Int>,
-    isLoadingProducts: Boolean,
-    productsErrorMessage: String?,
+    isLoading: Boolean,
+    favoriteProducts: List<Product>,
     onProductClick: (Int) -> Unit,
     onFavoriteClick: (Int) -> Unit,
     onFavoriteIconClick: () -> Unit,
+    onCartClick: () -> Unit,
     onProfileClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
+    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
         TopBar(
             isLoggedIn = isLoggedIn,
             onFavoriteClick = onFavoriteIconClick,
-            onCartClick = {},
+            onCartClick = onCartClick,
             onProfileClick = onProfileClick
         )
 
         when {
-            isLoadingProducts -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
+            isLoading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
 
-            productsErrorMessage != null -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
+            favoriteProducts.isEmpty() -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
-                        text = productsErrorMessage,
-                        color = Color.Red,
-                        fontSize = 13.sp
+                        text = "No favorites yet",
+                        fontSize = 14.sp,
+                        color = PowerfyTextSecondary
                     )
                 }
             }
@@ -110,25 +98,23 @@ private fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    item(span = { GridItemSpan(2) }) {
-                        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                            SearchBar()
-                            Text(
-                                text = "Top Deals on Electronics",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black
-                            )
-                        }
+                    item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(2) }) {
+                        Text(
+                            text = "Favorites",
+                            fontSize = 16.sp,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                            color = Color.Black,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
                     }
 
-                    items(products) { product ->
+                    items(favoriteProducts) { product ->
                         ProductCard(
                             product = product,
                             onClick = { onProductClick(product.id) },
                             onFavoriteClick = { onFavoriteClick(product.id) },
                             onAddToCartClick = {},
-                            isFavorite = product.id in favoriteIds
+                            isFavorite = true
                         )
                     }
                 }
