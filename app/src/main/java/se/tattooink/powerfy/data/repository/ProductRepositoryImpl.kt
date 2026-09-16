@@ -1,10 +1,19 @@
 package se.tattooink.powerfy.data.repository
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import se.tattooink.powerfy.data.remote.api.ProductApi
 import se.tattooink.powerfy.data.remote.dto.ProductDto
 import se.tattooink.powerfy.domain.model.Product
 import se.tattooink.powerfy.domain.repository.ProductRepository
 import javax.inject.Inject
+
+private val ELECTRONICS_CATEGORIES = listOf(
+    "smartphones",
+    "laptops",
+    "tablets",
+    "mobile-accessories"
+)
 
 class ProductRepositoryImpl @Inject constructor(
     private val productApi: ProductApi
@@ -14,6 +23,20 @@ class ProductRepositoryImpl @Inject constructor(
         return try {
             val response = productApi.getAllProducts()
             Result.success(response.products.map { it.toDomain() })
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getElectronicsProducts(): Result<List<Product>> {
+        return try {
+            val products = coroutineScope {
+                val deferredResults = ELECTRONICS_CATEGORIES.map { category ->
+                    async { productApi.getProductsByCategory(category).products }
+                }
+                deferredResults.flatMap { it.await() }
+            }
+            Result.success(products.map { it.toDomain() })
         } catch (e: Exception) {
             Result.failure(e)
         }

@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import se.tattooink.powerfy.ui.home.HomeRoute
 import se.tattooink.powerfy.ui.intro.IntroRoute
 import se.tattooink.powerfy.ui.login.LoginRoute
+import se.tattooink.powerfy.ui.productdetail.ProductDetailRoute
 import se.tattooink.powerfy.ui.profile.ProfileRoute
 import se.tattooink.powerfy.ui.signup.SignUpRoute
 import se.tattooink.powerfy.ui.splash.SplashRoute
@@ -87,6 +88,21 @@ fun PowerfyNavGraph(navController: NavHostController = rememberNavController()) 
                 },
                 onNavigateToProfile = {
                     navController.navigate(PowerfyDestination.Profile.route)
+                },
+                onProductClick = { productId ->
+                    navController.navigate(PowerfyDestination.ProductDetail.createRoute(productId))
+                }
+            )
+        }
+
+        composable(
+            route = PowerfyDestination.ProductDetail.route,
+            arguments = listOf(androidx.navigation.navArgument("productId") { type = androidx.navigation.NavType.IntType })
+        ) {
+            ProductDetailRoute(
+                onBackClick = { navController.popBackStack() },
+                onProductClick = { productId ->
+                    navController.navigate(PowerfyDestination.ProductDetail.createRoute(productId))
                 }
             )
         }
@@ -101,5 +117,5 @@ fun PowerfyNavGraph(navController: NavHostController = rememberNavController()) 
                 }
             )
         }
-        }    
+        }
 }
