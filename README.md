@@ -98,6 +98,12 @@ Design tokens are defined in `ui/theme/` and sourced directly from the Figma fil
 | Button radius | 12dp |
 | Spacing scale | 4 / 8 / 16 / 24 / 32 dp |
 
+## Local storage: Room, with real migrations
+
+Favorites and cart items are persisted locally with Room. Schema changes use **real, hand-written `Migration` objects** (see `data/local/Migrations.kt`) rather than `fallbackToDestructiveMigration()`.
+
+This is a deliberate choice, not an oversight: `fallbackToDestructiveMigration()` is a common — and perfectly reasonable — shortcut *during active development*, when the schema is still changing often and no real user data exists yet to protect. It simply wipes and recreates the database on any version bump, which is fast to iterate with but **destroys existing user data** on every schema change. That trade-off stops being acceptable the moment real users have data to lose, so Powerfy uses proper migrations from early on, even pre-launch — partly to build the habit of doing it the production way, partly so a schema change never has to be revisited later under more pressure.
+
 ## Data sources
 
 ### Products — DummyJSON
@@ -157,6 +163,14 @@ Checkout uses Stripe's `PaymentSheet` with a **test-mode** publishable key. Test
 - [ ] UI tests for critical flows (checkout)
 - [ ] Publish to Google Play (portfolio release)
 
+## Author
+
+**Patricia Gea** — Frontend/Android developer transitioning into tech, currently studying at Hyper Island (Stockholm).
+[GitHub](https://github.com/PatriciaGea)
+
+## License
+
+This project is for portfolio purposes. Product data is provided by DummyJSON and does not represent a real store.
 ## Author
 
 **Patricia Gea** — Frontend/Android developer transitioning into tech, currently studying at Hyper Island (Stockholm).
