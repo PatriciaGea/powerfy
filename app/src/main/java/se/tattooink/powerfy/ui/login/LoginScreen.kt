@@ -43,7 +43,14 @@ import se.tattooink.powerfy.ui.components.requestGoogleIdToken
 import se.tattooink.powerfy.ui.theme.PowerfyBorder
 import se.tattooink.powerfy.ui.theme.PowerfyPrimary
 import se.tattooink.powerfy.ui.theme.PowerfyTextSecondary
-
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 @Composable
 fun LoginRoute(
     onLoginSuccess: () -> Unit,
@@ -202,7 +209,8 @@ private fun LoginScreen(
 
             SecondaryButton(
                 text = "Continue with Google",
-                onClick = onGoogleClick
+                onClick = onGoogleClick,
+                iconResId = R.drawable.googlelogo
             )
 
             if (errorMessage != null) {
@@ -243,6 +251,8 @@ private fun AuthField(
     keyboardType: KeyboardType,
     isPassword: Boolean = false
 ) {
+    var passwordVisible by remember { mutableStateOf(false) }
+
     Column {
         Text(
             text = label,
@@ -255,7 +265,17 @@ private fun AuthField(
             placeholder = { Text(text = placeholder, fontSize = 13.sp) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-            visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+            visualTransformation = if (isPassword && !passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
+            trailingIcon = {
+                if (isPassword) {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                            contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                        )
+                    }
+                }
+            },
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.Transparent,
                 focusedContainerColor = Color.Transparent,
