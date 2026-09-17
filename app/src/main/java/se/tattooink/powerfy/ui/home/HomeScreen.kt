@@ -25,86 +25,52 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import se.tattooink.powerfy.domain.model.Product
 import se.tattooink.powerfy.ui.components.ProductCard
 import se.tattooink.powerfy.ui.components.SearchBar
-import se.tattooink.powerfy.ui.components.TopBar
 
 @Composable
 fun HomeRoute(
-    onNavigateToIntro: () -> Unit,
-    onNavigateToProfile: () -> Unit,
     onProductClick: (Int) -> Unit,
-    onFavoriteIconClick: () -> Unit,
-    onCartIconClick: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     HomeScreen(
-        isLoggedIn = uiState.isLoggedIn,
         products = uiState.products,
         favoriteIds = uiState.favoriteIds,
+        cartProductIds = uiState.cartProductIds,
         isLoadingProducts = uiState.isLoadingProducts,
         productsErrorMessage = uiState.productsErrorMessage,
         onProductClick = onProductClick,
         onFavoriteClick = viewModel::toggleFavorite,
-        onAddToCartClick = viewModel::addToCart,
-        onFavoriteIconClick = onFavoriteIconClick,
-        onCartIconClick = onCartIconClick,
-        onProfileClick = {
-            if (uiState.isLoggedIn) {
-                onNavigateToProfile()
-            } else {
-                onNavigateToIntro()
-            }
-        }
+        onAddToCartClick = viewModel::addToCart
     )
 }
 
 @Composable
 private fun HomeScreen(
-    isLoggedIn: Boolean,
     products: List<Product>,
     favoriteIds: Set<Int>,
+    cartProductIds: Set<Int>,
     isLoadingProducts: Boolean,
     productsErrorMessage: String?,
     onProductClick: (Int) -> Unit,
     onFavoriteClick: (Int) -> Unit,
-    onAddToCartClick: (Int) -> Unit,
-    onFavoriteIconClick: () -> Unit,
-    onCartIconClick: () -> Unit,
-    onProfileClick: () -> Unit
+    onAddToCartClick: (Int) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-        TopBar(
-            isLoggedIn = isLoggedIn,
-            onFavoriteClick = onFavoriteIconClick,
-            onCartClick = onCartIconClick,
-            onProfileClick = onProfileClick
-        )
-
         when {
             isLoadingProducts -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
 
             productsErrorMessage != null -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = productsErrorMessage,
-                        color = Color.Red,
-                        fontSize = 13.sp
-                    )
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = productsErrorMessage, color = Color.Red, fontSize = 13.sp)
                 }
             }
 
@@ -133,7 +99,8 @@ private fun HomeScreen(
                             onClick = { onProductClick(product.id) },
                             onFavoriteClick = { onFavoriteClick(product.id) },
                             onAddToCartClick = { onAddToCartClick(product.id) },
-                            isFavorite = product.id in favoriteIds
+                            isFavorite = product.id in favoriteIds,
+                            isInCart = product.id in cartProductIds
                         )
                     }
                 }

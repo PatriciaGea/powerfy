@@ -44,7 +44,8 @@ fun ProductCard(
     onFavoriteClick: () -> Unit,
     onAddToCartClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isFavorite: Boolean = false
+    isFavorite: Boolean = false,
+    isInCart: Boolean = false
 ) {
     Column(
         modifier = modifier

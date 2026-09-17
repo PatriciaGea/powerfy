@@ -21,6 +21,7 @@ data class HomeUiState(
     val userEmail: String = "",
     val products: List<Product> = emptyList(),
     val favoriteIds: Set<Int> = emptySet(),
+    val cartProductIds: Set<Int> = emptySet(),
     val isLoadingProducts: Boolean = true,
     val productsErrorMessage: String? = null
 )
@@ -46,6 +47,15 @@ class HomeViewModel @Inject constructor(
     init {
         loadProducts()
         observeFavorites()
+        observeCart()
+    }
+
+    private fun observeCart() {
+        viewModelScope.launch {
+            cartRepository.getCartLines().collect { lines ->
+                _uiState.update { it.copy(cartProductIds = lines.map { line -> line.productId }.toSet()) }
+            }
+        }
     }
 
     private fun loadProducts() {
