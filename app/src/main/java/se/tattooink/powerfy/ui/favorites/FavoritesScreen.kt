@@ -3,7 +3,6 @@ package se.tattooink.powerfy.ui.favorites
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -25,102 +24,71 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.tattooink.powerfy.domain.model.Product
 import se.tattooink.powerfy.ui.components.ProductCard
-import se.tattooink.powerfy.ui.components.TopBar
 import se.tattooink.powerfy.ui.theme.PowerfyTextSecondary
 
 @Composable
 fun FavoritesRoute(
     onProductClick: (Int) -> Unit,
-    onFavoriteIconClick: () -> Unit,
-    onCartClick: () -> Unit,
-    onNavigateToProfile: () -> Unit,
-    onNavigateToIntro: () -> Unit,
     viewModel: FavoritesViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     FavoritesScreen(
-        isLoggedIn = uiState.isLoggedIn,
         isLoading = uiState.isLoading,
         favoriteProducts = uiState.favoriteProducts,
         onProductClick = onProductClick,
         onFavoriteClick = viewModel::toggleFavorite,
-        onAddToCartClick = viewModel::addToCart,
-        onFavoriteIconClick = onFavoriteIconClick,
-        onCartClick = onCartClick,
-        onProfileClick = {
-            if (uiState.isLoggedIn) {
-                onNavigateToProfile()
-            } else {
-                onNavigateToIntro()
-            }
-        }
+        onAddToCartClick = viewModel::addToCart
     )
 }
 
 @Composable
 private fun FavoritesScreen(
-    isLoggedIn: Boolean,
     isLoading: Boolean,
     favoriteProducts: List<Product>,
     onProductClick: (Int) -> Unit,
     onFavoriteClick: (Int) -> Unit,
-    onAddToCartClick: (Int) -> Unit,
-    onFavoriteIconClick: () -> Unit,
-    onCartClick: () -> Unit,
-    onProfileClick: () -> Unit
+    onAddToCartClick: (Int) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
-        TopBar(
-            isLoggedIn = isLoggedIn,
-            onFavoriteClick = onFavoriteIconClick,
-            onCartClick = onCartClick,
-            onProfileClick = onProfileClick
-        )
-
-        when {
-            isLoading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
+    when {
+        isLoading -> {
+            Box(modifier = Modifier.fillMaxSize().background(Color.White), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
             }
+        }
 
-            favoriteProducts.isEmpty() -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        favoriteProducts.isEmpty() -> {
+            Box(modifier = Modifier.fillMaxSize().background(Color.White), contentAlignment = Alignment.Center) {
+                Text(text = "No favorites yet", fontSize = 14.sp, color = PowerfyTextSecondary)
+            }
+        }
+
+        else -> {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxSize().background(Color.White)
+            ) {
+                item(span = { GridItemSpan(2) }) {
                     Text(
-                        text = "No favorites yet",
-                        fontSize = 14.sp,
-                        color = PowerfyTextSecondary
+                        text = "Favorites",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        modifier = Modifier.padding(bottom = 4.dp)
                     )
                 }
-            }
 
-            else -> {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    item(span = { GridItemSpan(2) }) {
-                        Text(
-                            text = "Favorites",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-                    }
-
-                    items(favoriteProducts) { product ->
-                        ProductCard(
-                            product = product,
-                            onClick = { onProductClick(product.id) },
-                            onFavoriteClick = { onFavoriteClick(product.id) },
-                            onAddToCartClick = { onAddToCartClick(product.id) },
-                            isFavorite = true
-                        )
-                    }
+                items(favoriteProducts) { product ->
+                    ProductCard(
+                        product = product,
+                        onClick = { onProductClick(product.id) },
+                        onFavoriteClick = { onFavoriteClick(product.id) },
+                        onAddToCartClick = { onAddToCartClick(product.id) },
+                        isFavorite = true
+                    )
                 }
             }
         }
