@@ -55,6 +55,12 @@ object NetworkModule {
     fun provideProductApi(retrofit: Retrofit): ProductApi {
         return retrofit.create(ProductApi::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseFunctions(): com.google.firebase.functions.FirebaseFunctions {
+        return com.google.firebase.functions.FirebaseFunctions.getInstance()
+    }
 }
 
 @Module
