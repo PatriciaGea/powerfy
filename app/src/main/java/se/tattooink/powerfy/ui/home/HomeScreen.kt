@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.tattooink.powerfy.domain.model.Product
+import se.tattooink.powerfy.ui.components.AdBannerRow
 import se.tattooink.powerfy.ui.components.CategoryPill
 import se.tattooink.powerfy.ui.components.ProductCard
 import se.tattooink.powerfy.ui.components.SearchBar
@@ -93,6 +94,7 @@ private fun HomeScreen(
                     item(span = { GridItemSpan(2) }) {
                         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                             SearchBar()
+                            AdBannerRow()
                             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 item {
                                     CategoryPill(
