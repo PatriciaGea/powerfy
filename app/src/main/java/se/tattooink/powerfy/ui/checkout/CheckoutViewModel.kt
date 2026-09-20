@@ -12,6 +12,7 @@ import se.tattooink.powerfy.domain.model.Product
 import se.tattooink.powerfy.domain.repository.CartRepository
 import se.tattooink.powerfy.domain.repository.ProductRepository
 import javax.inject.Inject
+import kotlinx.coroutines.tasks.await
 
 enum class DeliveryMethod(val label: String, val subtitle: String, val fee: Double) {
     STANDARD("Standard Delivery", "3-5 business days", 4.99),
@@ -24,14 +25,16 @@ data class CheckoutUiState(
     val subtotal: Double = 0.0,
     val selectedMethod: DeliveryMethod = DeliveryMethod.STANDARD
 ) {
-    val total: Double get() = subtotal + selectedMethod.fee
+    val vat: Double get() = subtotal * 0.25
+    val total: Double get() = subtotal + selectedMethod.fee + vat
 }
 
 @HiltViewModel
 class CheckoutViewModel @Inject constructor(
     private val productRepository: ProductRepository,
     private val cartRepository: CartRepository,
-    authRepository: se.tattooink.powerfy.domain.repository.AuthRepository
+    authRepository: se.tattooink.powerfy.domain.repository.AuthRepository,
+    private val functions: com.google.firebase.functions.FirebaseFunctions
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -62,5 +65,23 @@ class CheckoutViewModel @Inject constructor(
 
     fun selectDeliveryMethod(method: DeliveryMethod) {
         _uiState.update { it.copy(selectedMethod = method) }
+    }
+    suspend fun createPaymentIntent(): Result<String> {
+        return try {
+            val amountInCents = (uiState.value.total * 100).toLong()
+            val data = hashMapOf(
+                "amount" to amountInCents,
+                "currency" to "sek"
+            )
+            val result = functions
+                .getHttpsCallable("createPaymentIntent")
+                .call(data)
+                .await()
+            val response = result.getData() as Map<*, *>
+            val clientSecret = response["clientSecret"] as String
+            Result.success(clientSecret)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

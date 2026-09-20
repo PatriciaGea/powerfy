@@ -171,7 +171,11 @@ fun PowerfyNavGraph(navController: NavHostController = rememberNavController()) 
             composable(PowerfyDestination.Checkout.route) {
                 CheckoutRoute(
                     onBackClick = { navController.popBackStack() },
-                    onContinueToPaymentClick = {}
+                    onPaymentSuccess = {
+                        navController.navigate(PowerfyDestination.Confirmation.route) {
+                            popUpTo(PowerfyDestination.Home.route)
+                        }
+                    }
                 )
             }
         }

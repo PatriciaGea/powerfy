@@ -20,14 +20,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.stripe.android.paymentsheet.PaymentSheet
+import com.stripe.android.paymentsheet.PaymentSheetResult
+import com.stripe.android.paymentsheet.rememberPaymentSheet
+import kotlinx.coroutines.launch
 import se.tattooink.powerfy.ui.components.BackButton
 import se.tattooink.powerfy.ui.components.PrimaryButton
 import se.tattooink.powerfy.ui.theme.PowerfyBorder
@@ -38,19 +47,46 @@ import se.tattooink.powerfy.ui.theme.PowerfyTextSecondary
 @Composable
 fun CheckoutRoute(
     onBackClick: () -> Unit,
-    onContinueToPaymentClick: () -> Unit,
+    onPaymentSuccess: () -> Unit,
     viewModel: CheckoutViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    val paymentSheet = rememberPaymentSheet { result ->
+        when (result) {
+            is PaymentSheetResult.Completed -> onPaymentSuccess()
+            is PaymentSheetResult.Canceled -> Unit
+            is PaymentSheetResult.Failed -> errorMessage = "Payment failed: ${result.error.message}"
+        }
+    }
 
     CheckoutScreen(
         customerName = uiState.customerName,
         subtotal = uiState.subtotal,
+        vat = uiState.vat,
         selectedMethod = uiState.selectedMethod,
         total = uiState.total,
+        errorMessage = errorMessage,
         onMethodSelected = viewModel::selectDeliveryMethod,
         onBackClick = onBackClick,
-        onContinueToPaymentClick = onContinueToPaymentClick
+        onContinueToPaymentClick = {
+            coroutineScope.launch {
+                val result = viewModel.createPaymentIntent()
+                result.fold(
+                    onSuccess = { clientSecret ->
+                        paymentSheet.presentWithPaymentIntent(
+                            clientSecret,
+                            PaymentSheet.Configuration(merchantDisplayName = "Powerfy")
+                        )
+                    },
+                    onFailure = { error ->
+                        errorMessage = error.message ?: "Could not start payment"
+                    }
+                )
+            }
+        }
     )
 }
 
@@ -58,8 +94,10 @@ fun CheckoutRoute(
 private fun CheckoutScreen(
     customerName: String,
     subtotal: Double,
+    vat: Double,
     selectedMethod: DeliveryMethod,
     total: Double,
+    errorMessage: String?,
     onMethodSelected: (DeliveryMethod) -> Unit,
     onBackClick: () -> Unit,
     onContinueToPaymentClick: () -> Unit
@@ -92,7 +130,8 @@ private fun CheckoutScreen(
                 Text(text = "Edit", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = PowerfyPrimary)
             }
             Text(text = "Hyper Island, Stockholm, 11122, Sweden", fontSize = 12.sp, color = PowerfyTextSecondary)
-            Text(text = "+46 70 123 45 67", fontSize = 12.sp, color = PowerfyTextSecondary)}
+            Text(text = "+46 70 123 45 67", fontSize = 12.sp, color = PowerfyTextSecondary)
+        }
 
         Text(text = "DELIVERY METHOD", fontSize = 11.sp, fontWeight = FontWeight.Medium, color = PowerfyTextSecondary)
 
@@ -121,11 +160,22 @@ private fun CheckoutScreen(
         ) {
             SummaryRow(label = "Subtotal", value = "$${"%.2f".format(subtotal)}")
             SummaryRow(label = "Delivery", value = "$${"%.2f".format(selectedMethod.fee)}")
+            SummaryRow(label = "VAT (25%)", value = "$${"%.2f".format(vat)}")
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(PowerfyBorder))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = "Total", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.Black)
                 Text(text = "$${"%.2f".format(total)}", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = PowerfyPrimary)
             }
+        }
+
+        if (errorMessage != null) {
+            Text(
+                text = errorMessage,
+                fontSize = 12.sp,
+                color = Color.Red,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
         }
 
         PrimaryButton(text = "CONTINUE TO PAYMENT", onClick = onContinueToPaymentClick)
