@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items as lazyRowItems
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -23,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.tattooink.powerfy.domain.model.Product
+import se.tattooink.powerfy.ui.components.CategoryPill
 import se.tattooink.powerfy.ui.components.ProductCard
 import se.tattooink.powerfy.ui.components.SearchBar
 
@@ -34,27 +37,33 @@ fun HomeRoute(
     val uiState by viewModel.uiState.collectAsState()
 
     HomeScreen(
-        products = uiState.products,
+        products = uiState.visibleProducts,
+        categories = uiState.categories,
+        selectedCategory = uiState.selectedCategory,
         favoriteIds = uiState.favoriteIds,
         cartProductIds = uiState.cartProductIds,
         isLoadingProducts = uiState.isLoadingProducts,
         productsErrorMessage = uiState.productsErrorMessage,
         onProductClick = onProductClick,
         onFavoriteClick = viewModel::toggleFavorite,
-        onAddToCartClick = viewModel::addToCart
+        onAddToCartClick = viewModel::addToCart,
+        onCategorySelected = viewModel::selectCategory
     )
 }
 
 @Composable
 private fun HomeScreen(
     products: List<Product>,
+    categories: List<String>,
+    selectedCategory: String?,
     favoriteIds: Set<Int>,
     cartProductIds: Set<Int>,
     isLoadingProducts: Boolean,
     productsErrorMessage: String?,
     onProductClick: (Int) -> Unit,
     onFavoriteClick: (Int) -> Unit,
-    onAddToCartClick: (Int) -> Unit
+    onAddToCartClick: (Int) -> Unit,
+    onCategorySelected: (String?) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -84,6 +93,22 @@ private fun HomeScreen(
                     item(span = { GridItemSpan(2) }) {
                         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                             SearchBar()
+                            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                item {
+                                    CategoryPill(
+                                        label = "All",
+                                        isSelected = selectedCategory == null,
+                                        onClick = { onCategorySelected(null) }
+                                    )
+                                }
+                                lazyRowItems(categories) { category ->
+                                    CategoryPill(
+                                        label = categoryLabel(category),
+                                        isSelected = selectedCategory == category,
+                                        onClick = { onCategorySelected(category) }
+                                    )
+                                }
+                            }
                             Text(
                                 text = "Top Deals on Electronics",
                                 fontSize = 16.sp,

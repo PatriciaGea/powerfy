@@ -20,11 +20,26 @@ data class HomeUiState(
     val userName: String = "",
     val userEmail: String = "",
     val products: List<Product> = emptyList(),
+    val categories: List<String> = emptyList(),
+    val selectedCategory: String? = null,
     val favoriteIds: Set<Int> = emptySet(),
     val cartProductIds: Set<Int> = emptySet(),
     val isLoadingProducts: Boolean = true,
     val productsErrorMessage: String? = null
-)
+) {
+    val visibleProducts: List<Product>
+        get() = when (selectedCategory) {
+            null -> products.sortedBy { if (it.category == "laptops") 0 else 1 }
+            else -> products.filter { it.category == selectedCategory }
+        }
+}
+
+private val CATEGORY_DISPLAY_ORDER = listOf("smartphones", "laptops", "tablets", "mobile-accessories")
+
+fun categoryLabel(category: String): String = when (category) {
+    "mobile-accessories" -> "Accessories"
+    else -> category.replaceFirstChar { it.uppercase() }
+}
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -64,7 +79,12 @@ class HomeViewModel @Inject constructor(
             val result = productRepository.getElectronicsProducts()
             result.fold(
                 onSuccess = { products ->
-                    _uiState.update { it.copy(isLoadingProducts = false, products = products) }
+                    val categories = CATEGORY_DISPLAY_ORDER.filter { category ->
+                        products.any { it.category == category }
+                    }
+                    _uiState.update {
+                        it.copy(isLoadingProducts = false, products = products, categories = categories)
+                    }
                 },
                 onFailure = { error ->
                     _uiState.update {
@@ -93,5 +113,9 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             cartRepository.addToCart(productId)
         }
+    }
+
+    fun selectCategory(category: String?) {
+        _uiState.update { it.copy(selectedCategory = category) }
     }
 }
