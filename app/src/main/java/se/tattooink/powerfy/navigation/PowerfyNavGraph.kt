@@ -17,6 +17,7 @@ import androidx.navigation.navArgument
 import se.tattooink.powerfy.ui.cart.CartRoute
 import se.tattooink.powerfy.ui.checkout.CheckoutRoute
 import se.tattooink.powerfy.ui.components.TopBar
+import se.tattooink.powerfy.ui.confirmation.ConfirmationRoute
 import se.tattooink.powerfy.ui.favorites.FavoritesRoute
 import se.tattooink.powerfy.ui.intro.IntroRoute
 import se.tattooink.powerfy.ui.login.LoginRoute
@@ -174,6 +175,16 @@ fun PowerfyNavGraph(navController: NavHostController = rememberNavController()) 
                     onPaymentSuccess = {
                         navController.navigate(PowerfyDestination.Confirmation.route) {
                             popUpTo(PowerfyDestination.Home.route)
+                        }
+                    }
+                )
+            }
+
+            composable(PowerfyDestination.Confirmation.route) {
+                ConfirmationRoute(
+                    onBackToHomeClick = {
+                        navController.navigate(PowerfyDestination.Home.route) {
+                            popUpTo(PowerfyDestination.Home.route) { inclusive = true }
                         }
                     }
                 )
