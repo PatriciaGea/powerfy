@@ -108,8 +108,8 @@ private fun CheckoutScreen(
             .fillMaxSize()
             .background(Color.White)
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp, vertical = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(start = 24.dp, end = 24.dp, top = 48.dp, bottom = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(28.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             BackButton(onClick = onBackClick)
