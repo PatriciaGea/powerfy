@@ -8,22 +8,23 @@ Built as a portfolio to demonstrate a complete, production-shaped mobile android
 
 ##  Screenshots
 
-<!--
-Organize screenshots by flow, in this order. Suggested folder: docs/screenshots/
-Recommended: 2-3 phone-width images per row using an HTML table or side-by-side markdown.
--->
+Splash, Intro, Home, Detail, Favorite
+<img src="ap1.png" style="height: 300px; width: auto;">
 
-**Onboarding — Splash, Intro, Login, Sign Up**
-<!-- ![Splash](docs/screenshots/splash.png) ![Intro](docs/screenshots/intro.png) ![Login](docs/screenshots/login.png) ![Sign Up](docs/screenshots/signup.png) -->
+Login, Login by Google O Auth, Logged
+<img src="ap2.png" style="height: 300px; width: auto;">
 
-**Shopping — Home, Product Detail, Favorites, Cart**
-<!-- ![Home](docs/screenshots/home.png) ![Product Detail](docs/screenshots/product-detail.png) ![Favorites](docs/screenshots/favorites.png) ![Cart](docs/screenshots/cart.png) -->
+Sign Up, Guest mode
+<img src="ap3.png" style="height: 300px; width: auto;">
 
-**Checkout — Checkout, Stripe Payment Sheet, Confirmation**
-<!-- ![Checkout](docs/screenshots/checkout.png) ![Stripe Payment](docs/screenshots/payment-sheet.png) ![Confirmation](docs/screenshots/confirmation.png) -->
+Cart, Checkout, Confirmed
+<img src="ap4.png" style="height: 300px; width: auto;">
 
-**Full flow (GIF)**
-<!-- ![Powerfy demo](docs/screenshots/demo.gif) -->
+Stripe Sheet Payment
+<img src="ap5.png" style="height: 300px; width: auto;">
+
+Dev Mode
+<img src="app6.png" style="height: 300px; width: auto;">
 
 ##  Objective
 
