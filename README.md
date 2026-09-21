@@ -137,15 +137,15 @@ Security measures in that backend:
 - **A billing spend cap is configured** on the Firebase project (Blaze plan), as a safety net against unexpected usage costs while the project is in development.
 
 ## Design system
-Design tokens are defined in `ui/theme/` and sourced directly from the Figma file ("Powerfy - Rebuilt (Dev Ready)"), which the author designed from scratch:
-| Token | Value |
-|---|---|
-| Primary | ![Primary](https://img.shields.io/badge/Primary-159AD3?style=flat-square&labelColor=159AD3&color=159AD3) `#159AD3` |
-| Accent | ![Accent](https://img.shields.io/badge/Accent-FF8026?style=flat-square&labelColor=FF8026&color=FF8026) `#FF8026` |
-| Background | ![Background](https://img.shields.io/badge/Background-FFFFFF?style=flat-square&labelColor=FFFFFF&color=FFFFFF) `#FFFFFF` |
-| Surface / cards | ![Surface / cards](https://img.shields.io/badge/Surface%20%2F%20cards-F5F7FA?style=flat-square&labelColor=F5F7FA&color=F5F7FA) `#F5F7FA` |
-| Secondary text | ![Secondary text](https://img.shields.io/badge/Secondary%20text-7A7A7A?style=flat-square&labelColor=7A7A7A&color=7A7A7A) `#7A7A7A` |
-| Border | ![Border](https://img.shields.io/badge/Border-E5E8EC?style=flat-square&labelColor=E5E8EC&color=E5E8EC) `#E5E8EC` |
+Design tokens are defined in `ui/theme/` :
+| Token -  Value | 
+|---|
+ | ![Primary](https://img.shields.io/badge/Primary-159AD3?style=flat-square&labelColor=159AD3&color=159AD3) `#159AD3` |
+| ![Accent](https://img.shields.io/badge/Accent-FF8026?style=flat-square&labelColor=FF8026&color=FF8026) `#FF8026` |
+| ![Background](https://img.shields.io/badge/Background-FFFFFF?style=flat-square&labelColor=FFFFFF&color=FFFFFF) `#FFFFFF` |
+| ![Surface / cards](https://img.shields.io/badge/Surface%20%2F%20cards-F5F7FA?style=flat-square&labelColor=F5F7FA&color=F5F7FA) `#F5F7FA` |
+| ![Secondary text](https://img.shields.io/badge/Secondary%20text-7A7A7A?style=flat-square&labelColor=7A7A7A&color=7A7A7A) `#7A7A7A` |
+| ![Border](https://img.shields.io/badge/Border-E5E8EC?style=flat-square&labelColor=E5E8EC&color=E5E8EC) `#E5E8EC` |
 
 
 ## Local storage: Room, with real migrations
