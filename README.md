@@ -1,102 +1,140 @@
 # Powerfy 🔌
 
-Powerfy is a native Android e-commerce app for electronics, built as an MVP with Jetpack Compose and modern Android architecture. It's a portfolio project demonstrating a full design-to-code workflow, from Figma to a working, API-driven app.
+A native Android e-commerce app for electronics, designed in Figma and built from scratch in Kotlin with Jetpack Compose, with a real authentication, database, and payment backend behind it. 
 
-<!-- Add a screenshot or GIF of the app here once you have one -->
-<!-- ![Powerfy screenshot](docs/screenshot.png) -->
+Built as a portfolio to demonstrate a complete, production-shaped mobile android app.
+
+**The concept, name, branding, and UI/UX design are original work by the author**, designed in Figma before any code was written.
+
+##  Screenshots
+
+<!--
+Organize screenshots by flow, in this order. Suggested folder: docs/screenshots/
+Recommended: 2-3 phone-width images per row using an HTML table or side-by-side markdown.
+-->
+
+**Onboarding — Splash, Intro, Login, Sign Up**
+<!-- ![Splash](docs/screenshots/splash.png) ![Intro](docs/screenshots/intro.png) ![Login](docs/screenshots/login.png) ![Sign Up](docs/screenshots/signup.png) -->
+
+**Shopping — Home, Product Detail, Favorites, Cart**
+<!-- ![Home](docs/screenshots/home.png) ![Product Detail](docs/screenshots/product-detail.png) ![Favorites](docs/screenshots/favorites.png) ![Cart](docs/screenshots/cart.png) -->
+
+**Checkout — Checkout, Stripe Payment Sheet, Confirmation**
+<!-- ![Checkout](docs/screenshots/checkout.png) ![Stripe Payment](docs/screenshots/payment-sheet.png) ![Confirmation](docs/screenshots/confirmation.png) -->
+
+**Full flow (GIF)**
+<!-- ![Powerfy demo](docs/screenshots/demo.gif) -->
+
+##  Objective
+
+Powerfy demonstrates my ability to design and develop a professional Android application using industry relevant technologies and practices.
+
+The project translates a Figma design into a functional application with Kotlin and Jetpack Compose, implementing Firebase Authentication, local data persistence, backend integration, and Stripe test mode payments.
+
+It is designed as a portfolio project to demonstrate the ability to build complete application that can be applied to real world products.
 
 ## Overview
 
-Powerfy lets users browse electronics (smartphones, laptops, tablets, and mobile accessories), view product details, manage favorites, and go through a full cart → checkout → payment → confirmation flow.
+Powerfy lets users browse electronics (smartphones, laptops, tablets, and mobile accessories) pulled live from a public product API, view product details, favorite and add items to a persistent cart, and complete a full checkout → payment → confirmation flow with a real Stripe integration in test mode.
 
 - **Platform:** Android (min SDK 26 / Android 8.0)
 - **Language:** Kotlin
-- **UI:** Jetpack Compose
-- **Product data:** [DummyJSON](https://dummyjson.com/) (public REST API, used for product catalog and images only)
-- **Auth & user data:** Firebase Authentication + Cloud Firestore (real accounts, real user data)
-- **Payments:** Stripe (test mode — real SDK integration, no real money moves)
-- **Status:** MVP in active development
+- **UI:** Jetpack Compose + Material 3
+- **Product data:** [DummyJSON](https://dummyjson.com/) (public REST API, product catalog and images)
+- **Auth & user data:** Firebase Authentication (email/password, Google Sign-In, anonymous/guest) + Cloud Firestore
+- **Local persistence:** Room (favorites, cart — survives app restarts)
+- **Payments:** Stripe, test mode, via a dedicated Cloud Functions backend (see Payments backend, below)
+- **Status:** All 11 screens implemented, full user flow working end to end
 
-## Screens
+## 📱 Screens
 
-| # | Screen | Status |
-|---|--------|--------|
-| 00 | Splash | ✅ Implemented |
-| 00b | Intro | 🔜 Planned |
-| 01 | Login | 🔜 Planned |
-| 02 | Sign In | 🔜 Planned |
-| 03 | Home | 🔜 Planned |
-| 04 | Product Detail | 🔜 Planned |
-| 05 | Favorites | 🔜 Planned |
-| 06 | Cart | 🔜 Planned |
-| 07 | Checkout | 🔜 Planned |
-| 08 | Payment | 🔜 Planned |
-| 09 | Confirmation | 🔜 Planned |
+| # | Screen | What it does |
+|---|--------|---------------|
+| 00 | Splash | Checks for an existing session and routes to Home or Intro |
+| 00b | Intro | Entry point — Log in, Sign up, or Continue as Guest |
+| 01 | Login | Email/password + Google Sign-In, both backed by Firebase Auth |
+| 02 | Sign Up | Account creation (Firebase Auth + Firestore profile), also supports Google |
+| 03 | Home | Product grid from a live API, category ads carousel, search bar |
+| 04 | Product Detail | Full product info, "frequently viewed" from the same category |
+| 05 | Favorites | Persisted locally with Room, reflected live across the app |
+| 06 | Cart | Persisted locally with Room, quantity stepper, running total |
+| 07 | Checkout | Delivery method selection, VAT calculation, order summary |
+| 08 | Payment | Stripe's native `PaymentSheet` — a real payment integration in test mode |
+| 09 | Confirmation | Order confirmation screen after a successful payment |
+| — | Profile | Logged-in user info + logout |
 
 ## Architecture
 
 The app follows **MVVM** with a clean separation between data, domain, and UI layers:
 
 ```
-com.patriciagea.powerfy/
+se.tattooink.powerfy/
 ├── data/
 │   ├── remote/          # Retrofit API interfaces + DTOs (DummyJSON — products only)
-│   ├── firebase/        # Firebase Auth + Firestore data sources (users, orders)
-│   ├── payment/         # Stripe SDK wrapper (PaymentSheet integration)
+│   ├── firebase/        # Firebase Auth + Firestore data sources (users)
+│   ├── local/            # Room database, DAOs, entities, and hand-written migrations
 │   └── repository/      # Repository implementations
 ├── domain/
 │   ├── model/            # Clean domain models (no DTOs leaking into UI)
-│   └── repository/       # Repository interfaces (ProductRepository, AuthRepository, PaymentRepository)
-├── di/                    # Hilt modules (network, Firebase, Stripe, repositories)
-├── navigation/            # Navigation Compose graph and routes
+│   └── repository/       # Repository interfaces (Product, Auth, Cart, Favorite)
+├── di/                    # Hilt modules (network, Firebase, Room, Stripe)
+├── navigation/            # Navigation Compose graph, routes, and the app-level Scaffold
 └── ui/
-    ├── theme/             # Design tokens (color, type, shape, spacing)
-    ├── components/        # Reusable composables (ProductCard, TopBar, etc.)
-    └── <feature>/          # One package per screen (splash, home, cart, ...)
+    ├── theme/             # Design tokens (color, type, shape, spacing) — sourced from Figma
+    ├── components/        # Reusable composables (ProductCard, TopBar, PrimaryButton, ...)
+    └── <feature>/          # One package per screen (splash, home, cart, checkout, ...)
 ```
 
-**Why this structure:** it keeps networking and business logic independent of Compose, makes each screen testable in isolation, and mirrors the layering expected in professional Android codebases. Product data (DummyJSON), user/auth data (Firebase), and payments (Stripe) are three separate data sources, each behind its own repository interface — so, for example, swapping DummyJSON for a real product backend later wouldn't touch the auth or payment code at all.
+**Why this structure:** it keeps networking and business logic independent of Compose, makes each screen testable in isolation, and mirrors the layering expected in professional Android codebases. Product data (DummyJSON), user/auth data (Firebase), local persistence (Room), and payments (Stripe) are four separate data sources, each behind its own repository interface — swapping any one of them later wouldn't touch the others.
+
+**A pattern worth calling out:** the `TopBar` (logo, favorites icon, cart icon with a live item-count badge, profile icon) is declared **once**, at the `Scaffold` level in the navigation graph — not duplicated per screen. Each screen only exposes plain `() -> Unit` callbacks; navigation and shared UI state (login status, cart count) are resolved centrally. This keeps the `TopBar` reusable and fully decoupled from navigation, and means adding a new screen that needs it costs one line, not a rebuild of the component.
 
 ## Tech stack
 
 | Purpose | Library |
 |---|---|
 | UI | Jetpack Compose + Material 3 |
-| Navigation | Navigation Compose |
+| Navigation | Navigation Compose (single `Scaffold`, centralized top bar) |
 | Dependency injection | Hilt |
 | Networking (products) | Retrofit + kotlinx.serialization |
-| Auth | Firebase Authentication |
-| User / order data | Cloud Firestore |
-| Payments | Stripe Android SDK (`PaymentSheet`), **test mode** |
+| Auth | Firebase Authentication (email/password, Google, anonymous) |
+| User data | Cloud Firestore |
+| Local persistence | Room, with hand-written `Migration`s (see below) |
+| Payments | Stripe Android SDK (`PaymentSheet`) + a dedicated Firebase Cloud Functions backend |
 | Image loading | Coil |
 | Async | Kotlin Coroutines + Flow |
-| Local persistence (cart, favorites) | Room *(planned)* |
 | Testing | JUnit + Compose UI Testing *(planned)* |
 
 ### A note on login and payment
 
 Login/sign-up and payment are **real integrations**, not mocked:
 
-- **Login / Sign in** use Firebase Authentication (email/password). User profile data (name, addresses, order history) is stored in Cloud Firestore.
-- **Payment** uses the real Stripe Android SDK, but Stripe's **test mode** (test API keys, test card numbers) — the integration, validation, and error handling all behave exactly like production, but no real card is charged and no real money moves. This is standard practice for demoing a payment flow safely.
-- **Product catalog only** comes from DummyJSON, since it's just for demo images and product info — everything about the user and the transaction is real infrastructure.
+- **Login / Sign up** use Firebase Authentication — email/password, Google Sign-In (via Credential Manager), and an anonymous guest mode. User profile data is stored in Cloud Firestore.
+- **Payment** uses the real Stripe Android SDK (`PaymentSheet`) talking to a real backend (see below), in Stripe's **test mode** — the integration, validation, and error handling behave exactly like production, but no real card is charged. This is standard practice for demoing a payment flow safely.
+- **Product catalog only** comes from DummyJSON — everything about the user, their cart, and the transaction is real infrastructure the author built and owns.
 
-Because of this, running the project requires your own Firebase project (`google-services.json`) and a Stripe test-mode publishable key — see [Getting started](#getting-started).
+Because of this, running the project requires a Firebase project (`google-services.json`), a Stripe test-mode publishable key, and the companion backend deployed 
+
+## 💳 Payments backend
+
+Stripe requires the actual charge (`PaymentIntent`) to be created **server-side**, with a secret API key that must never exist inside an Android app — if it did, anyone could decompile the APK and extract it. So Powerfy ships with a small, dedicated backend: **[powerfy-backend](https://github.com/PatriciaGea/powerfy-backend)**, a Firebase Cloud Function (**TypeScript**) that creates the Stripe `PaymentIntent` and returns only the temporary `client_secret` the app needs to open Stripe's payment sheet.
+
+Security measures in that backend:
+- **Requires a valid, logged-in Firebase user.** The function checks `request.auth` before doing anything — an unauthenticated request is rejected before it ever reaches Stripe, which also protects against anyone spamming the endpoint to run up API usage.
+- **The Stripe secret key lives in Google Cloud Secret Manager**, injected into the function at runtime — it's never committed to source control or bundled into the app.
+- **A billing spend cap is configured** on the Firebase project (Blaze plan), as a safety net against unexpected usage costs while the project is in development.
 
 ## Design system
 
-Design tokens are defined in `ui/theme/` and sourced directly from the Figma file ("Powerfy - Rebuilt (Dev Ready)"):
-
+Design tokens are defined in `ui/theme/` and sourced directly from the Figma file ("Powerfy - Rebuilt (Dev Ready)"), which the author designed from scratch:
 | Token | Value |
 |---|---|
-| Primary | `#159AD3` |
-| Background | `#FFFFFF` |
-| Surface / cards | `#F5F7FA` |
-| Secondary text | `#7A7A7A` |
-| Border | `#E5E8EC` |
-| Font | Roboto (Regular / Medium / Bold) |
-| Button radius | 12dp |
-| Spacing scale | 4 / 8 / 16 / 24 / 32 dp |
+| Primary | <span style="color:#159AD3">■</span> `#159AD3` |
+| Accent | <span style="color:#FF8026">■</span> `#FF8026` |
+| Background | <span style="color:#FFFFFF">■</span> `#FFFFFF` |
+| Surface / cards | <span style="color:#F5F7FA">■</span> `#F5F7FA` |
+| Secondary text | <span style="color:#7A7A7A">■</span> `#7A7A7A` |
+| Border | <span style="color:#E5E8EC">■</span> `#E5E8EC` |
 
 ## Local storage: Room, with real migrations
 
@@ -121,61 +159,116 @@ GET /products/{id}                     # product details
 
 > **Note:** DummyJSON is a test/prototyping API. Write operations (create, update, delete) are simulated and not actually persisted server-side — irrelevant here since Powerfy only ever reads product data from it.
 
-### Users & orders — Firebase
-- **Authentication:** email/password sign-up and login via Firebase Auth.
-- **Firestore collections:** `users/{uid}` (profile, addresses), `orders/{orderId}` (order history, linked to a user).
+### Users — Firebase
+- **Authentication:** email/password, Google Sign-In, and anonymous guest mode via Firebase Auth.
+- **Firestore collection:** `users/{uid}` (name, email).
 
-### Payments — Stripe (test mode)
-Checkout uses Stripe's `PaymentSheet` with a **test-mode** publishable key. Test card numbers (e.g. `4242 4242 4242 4242`) simulate successful and failed payments without moving real money.
+### Payments — Stripe (test mode), via [powerfy-backend](https://github.com/PatriciaGea/powerfy-backend)
+Checkout calls a Firebase Cloud Function to create a `PaymentIntent`, then opens Stripe's `PaymentSheet` with the returned client secret. Test card numbers (e.g. `4242 4242 4242 4242`, any future expiry, any CVC) simulate successful and failed payments without moving real money.
 
-## Getting started
+### A note on currency
+Product prices come straight from the DummyJSON API, which returns them in **USD**. Powerfy displays prices in USD as-is, and calculates VAT and delivery fees on top of that in the same currency — there's no hidden conversion happening. This was a deliberate scope choice for an API-driven MVP with test data, not a limitation of the app: because currency formatting is centralized in one place and the payment amount is always passed to Stripe as an explicit `amount` + `currency` pair, both the **displayed currency** and the **currency the payment is actually processed in** could be swapped to any ISO currency (SEK, EUR, GBP, ...) by changing that one value — the same is true of the **payment recipient**, since that's controlled by whichever Stripe account's keys are configured on the backend, not hardcoded in the app.
 
-### Prerequisites
-- Android Studio (latest stable)
-- JDK 17
-- An Android device or emulator running API 26+
-- A [Firebase project](https://console.firebase.google.com/) with Authentication (email/password) and Firestore enabled
-- A [Stripe](https://dashboard.stripe.com/) account with **test-mode** keys
+## Configuration
 
-### Setup
-1. Clone the repo:
-   ```bash
-   git clone https://github.com/PatriciaGea/Powerfy.git
-   ```
-2. Add your Firebase config: download `google-services.json` from your Firebase project (Project settings → Your apps → Android) and place it in `app/`.
-3. Add your Stripe **test** publishable key to `local.properties` (not committed to git):
-   ```
-   STRIPE_PUBLISHABLE_KEY=pk_test_xxxxxxxxxxxx
-   ```
-4. Open the project in Android Studio and let Gradle sync.
-5. Run the app on an emulator or physical device (`Shift + F10`).
+Running this project requires a Firebase project (Authentication + Firestore enabled, Blaze plan for the Cloud Functions backend), a Stripe account with test-mode keys, and the companion [powerfy-backend](https://github.com/PatriciaGea/powerfy-backend) deployed to that same Firebase project.
 
-> DummyJSON needs no key or config — it's a public, unauthenticated API used only for product data.
+- `app/google-services.json` — Firebase config for the Android app (package `se.tattooink.powerfy`)
+- `local.properties` → `STRIPE_PUBLISHABLE_KEY` — Stripe test-mode publishable key, kept out of version control
+- `powerfy-backend`'s `createPaymentIntent` Cloud Function must be live for the payment flow to work
+
+DummyJSON requires no key or config, it's a public, unauthenticated API used only for product data.
+
+##  Concepts practiced
+
+- **MVVM + repository pattern**, with domain models kept separate from network DTOs and Room entities
+- **Dependency injection with Hilt**, across ViewModels, repositories, and third-party SDKs (Firebase, Stripe)
+- **Unidirectional data flow** with `StateFlow` and `collectAsState`, no UI state living outside a ViewModel
+- **Local persistence with Room**, including a real `Migration` (not `fallbackToDestructiveMigration()`) — see below
+- **Centralized navigation state**: a single `Scaffold` + `TopBar` shared across screens via the nav graph, instead of prop-drilling navigation callbacks through every screen
+- **Secure client-server architecture for payments**: the app never holds a payment secret; a dedicated authenticated backend does
+- **Design-to-code fidelity**: pulling exact colors, spacing, and typography from Figma via its API rather than eyeballing a screenshot
+
+##  Learnings & challenges
+
+A few real problems hit while building this, and how they were solved — the parts that don't show up in a demo GIF:
+
+- **Room + KSP2 compiler bug.** `Room 2.6.1` threw an obscure `unexpected jvm signature V` error on `suspend fun` DAO methods with no return value, caused by a known KSP2 incompatibility — fixed by upgrading to `Room 2.7.1`, not by changing the (correct) code.
+- **A silent Windows clipboard bug broke Stripe auth for hours.** Piping a secret into `firebase functions:secrets:set` via PowerShell's `|` silently appended a trailing newline, so the exact same key kept getting rejected by Stripe as "invalid" on every retry. Confirmed the key itself was valid with a direct `curl` call to Stripe's API, then fixed the actual cause by writing the secret with `Set-Content -NoNewline` instead of a pipe.
+- **`PaymentSheet` crashed the Checkout screen on first composition.** Creating it with a raw `remember { PaymentSheet(...) }` registered an `ActivityResultLauncher` after the activity's lifecycle had already moved past `CREATED`, throwing an `IllegalStateException`. Fixed by switching to Compose's own `rememberPaymentSheet()`, which registers the launcher at the correct lifecycle point.
+- **Why payments need a backend at all.** Stripe's secret key can never live in an Android app (anyone can decompile an APK), so creating a `PaymentIntent` has to happen server-side. That's the reason `powerfy-backend` exists as a separate, small Firebase Cloud Function repo rather than everything living in one place.
+- **Vector Asset Studio can silently produce broken drawables.** Importing photographic banner images as Android *Vector* Assets failed the build with `fillColor is incompatible with <pattern>` — vector drawables only support solid/gradient fills, not embedded raster images. Fixed by importing them as plain raster PNGs instead.
 
 ## Roadmap
 
-- [ ] Implement remaining 10 screens
-- [ ] Firebase Authentication (email/password sign up + login)
-- [ ] Firestore: user profiles and order history
-- [ ] Stripe `PaymentSheet` integration (test mode)
-- [ ] Persist cart/favorites locally (Room)
+- [ ] Firestore-backed order history (linking completed Stripe payments to a `orders/{orderId}` collection)
 - [ ] Unit tests for ViewModels and repositories
 - [ ] UI tests for critical flows (checkout)
-- [ ] Publish to Google Play (portfolio release)
+- [ ] Real delivery address management (currently a fixed placeholder on Checkout)
 
 ## Author
 
-**Patricia Gea** — Frontend/Android developer transitioning into tech, currently studying at Hyper Island (Stockholm).
+**Patricia Gea** — Web / Mobile developer
+Hyper Island - Yrkeshogskolan (YH) - Higher Vocational Education (HVE) - Stockholm 
+The Powerfy concept, brand, art design , and UI/UX design are original work, designed by Patricia Gea
 [GitHub](https://github.com/PatriciaGea)
 
 ## License
 
-This project is for portfolio purposes. Product data is provided by DummyJSON and does not represent a real store.
-## Author
+This project is for portfolio purposes. Product data is provided by DummyJSON and does not represent a real store. All payments run in Stripe test mode — no real transactions occur.
 
-**Patricia Gea** — Frontend/Android developer transitioning into tech, currently studying at Hyper Island (Stockholm).
-[GitHub](https://github.com/PatriciaGea)
 
-## License
 
-This project is for portfolio purposes. Product data is provided by DummyJSON and does not represent a real store.
+
+
+                                   -.                          .-                                   
+                                   :=.                        .=:                                   
+                                    :=.                      .=:                                    
+                                     :=. ..:----=--=----:.. .=:                                     
+                                     .-====================-=-.                                     
+                                   :-==========================-:                                   
+                                 :================================:                                 
+                               .====================================.                               
+                              -======:  .==================.  :======-                              
+                             -=======:   ==================   :=======-                             
+                            -=========--====================--=========-                            
+                           .============================================.                           
+                           -============================================-                           
+                          .==============================================.                          
+                          .----------------------------------------------.                          
+                .::-::.    ..............................................    .::-::.                
+               :=======-  .==============================================.  -=======:               
+              :-=======-: :==============================================: :========-:              
+              -=========- .==============================================. -=========:              
+              -=========- .==============================================: -=========-              
+              -=========- .==============================================: -=========-              
+              -=========- .==============================================: -=========-              
+              -=========- .==============================================: -=========-              
+              -=========- .==============================================: -=========-              
+              -=========- .==============================================: -=========-              
+              -=========- .==============================================: -=========-              
+              -=========- .==============================================: -=========-              
+              -=========- .==============================================: -=========-              
+              -=========- .==============================================: -=========-              
+              -=========- .==============================================. -=========-              
+              :=========- :==============================================: -=========:              
+              .=========. :==============================================: .=========.              
+                :-===-:.  .==============================================.  .:-===-:                
+                          .==============================================.                          
+                          .==============================================.                          
+                           -============================================-                           
+                           .-==========================================-.                           
+                             ..:::::==========-::::::-==========:::::..                             
+                                    ==========:      :==========                                    
+                                    ==========:      :==========                                    
+                                    ==========:      :==========                                    
+                                    ==========:      :==========                                    
+                                    ==========:      :==========                                    
+                                    ==========:      :==========                                    
+                                    -=========:      :=========-                                    
+                                    .-=======:        :=======-.                                    
+                                      .:---:.          .:---:.                                      
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
