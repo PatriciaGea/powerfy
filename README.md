@@ -9,22 +9,22 @@ Built as a portfolio to demonstrate a complete, production-shaped mobile android
 ##  Screenshots
 
 Splash, Intro, Home, Detail, Favorite
-<img src="ap1.png" style="height: 300px; width: auto;">
+<img src="docs/screenshots/ap1.png" style="height: 300px; width: auto;">
 
 Login, Login by Google O Auth, Logged
-<img src="ap2.png" style="height: 300px; width: auto;">
+<img src="docs/screenshots/ap2.png" style="height: 300px; width: auto;">
 
 Sign Up, Guest mode
-<img src="ap3.png" style="height: 300px; width: auto;">
+<img src="docs/screenshots/ap3.png" style="height: 300px; width: auto;">
 
 Cart, Checkout, Confirmed
-<img src="ap4.png" style="height: 300px; width: auto;">
+<img src="docs/screenshots/ap4.png" style="height: 300px; width: auto;">
 
 Stripe Sheet Payment
-<img src="ap5.png" style="height: 300px; width: auto;">
+<img src="docs/screenshots/ap5.png" style="height: 300px; width: auto;">
 
 Dev Mode
-<img src="app6.png" style="height: 300px; width: auto;">
+<img src="docs/screenshots/app6.png" style="height: 300px; width: auto;">
 
 ##  Objective
 
