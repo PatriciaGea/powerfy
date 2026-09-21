@@ -37,6 +37,7 @@ private val TOP_BAR_ROUTES = setOf(
 @Composable
 fun PowerfyNavGraph(navController: NavHostController = rememberNavController()) {
     val appViewModel: AppViewModel = hiltViewModel()
+    val isLoggedIn by appViewModel.isLoggedInFlow.collectAsState()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
     val cartItemCount by appViewModel.cartItemCount.collectAsState()
@@ -51,12 +52,12 @@ fun PowerfyNavGraph(navController: NavHostController = rememberNavController()) 
         topBar = {
             if (currentRoute in TOP_BAR_ROUTES) {
                 TopBar(
-                    isLoggedIn = appViewModel.isLoggedIn,
+                    isLoggedIn = isLoggedIn,
                     cartItemCount = cartItemCount,
                     onFavoriteClick = { navController.navigate(PowerfyDestination.Favorites.route) },
                     onCartClick = { navController.navigate(PowerfyDestination.Cart.route) },
                     onProfileClick = {
-                        if (appViewModel.isLoggedIn) {
+                        if (isLoggedIn) {
                             navController.navigate(PowerfyDestination.Profile.route)
                         } else {
                             navController.navigate(PowerfyDestination.Intro.route) {
