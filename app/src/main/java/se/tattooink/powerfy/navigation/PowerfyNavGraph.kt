@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -68,10 +69,14 @@ fun PowerfyNavGraph(navController: NavHostController = rememberNavController()) 
             }
         }
     ) { innerPadding ->
+        val topBarShown = currentRoute in TOP_BAR_ROUTES
         NavHost(
             navController = navController,
             startDestination = PowerfyDestination.Splash.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(
+                top = if (topBarShown) innerPadding.calculateTopPadding() else 0.dp,
+                bottom = if (topBarShown) innerPadding.calculateBottomPadding() else 0.dp
+            )
         ) {
 
             composable(PowerfyDestination.Splash.route) {
