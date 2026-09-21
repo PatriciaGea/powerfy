@@ -117,7 +117,7 @@ Because of this, running the project requires a Firebase project (`google-servic
 
 ## 💳 Payments backend
 
-Stripe requires the actual charge (`PaymentIntent`) to be created **server-side**, with a secret API key that must never exist inside an Android app — if it did, anyone could decompile the APK and extract it. So Powerfy ships with a small, dedicated backend: **[powerfy-backend](https://github.com/PatriciaGea/powerfy-backend)**, a Firebase Cloud Function (**TypeScript**) that creates the Stripe `PaymentIntent` and returns only the temporary `client_secret` the app needs to open Stripe's payment sheet.
+Stripe requires PaymentIntent creation server-side, keeping the secret API key out of the Android app entirely. Powerfy uses a dedicated backend for this: powerfy-backend, a Firebase Cloud Function (TypeScript) that creates the PaymentIntent and returns only the temporary client_secret needed to open Stripe's payment sheet.
 
 Security measures in that backend:
 - **Requires a valid, logged-in Firebase user.** The function checks `request.auth` before doing anything — an unauthenticated request is rejected before it ever reaches Stripe, which also protects against anyone spamming the endpoint to run up API usage.
@@ -180,7 +180,9 @@ Running this project requires a Firebase project (Authentication + Firestore ena
 Hyper Island - Yrkeshogskolan (YH) - Higher Vocational Education (HVE) - Stockholm 
 
 The Powerfy concept, brand, art design , and UI/UX design are original work, designed by Patricia Gea
+
 [GitHub](https://github.com/PatriciaGea)
+
 https://patriciageadev.vercel.app/
 
 
