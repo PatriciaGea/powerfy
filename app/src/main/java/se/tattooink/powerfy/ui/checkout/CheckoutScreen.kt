@@ -43,6 +43,7 @@ import se.tattooink.powerfy.ui.theme.PowerfyBorder
 import se.tattooink.powerfy.ui.theme.PowerfyPrimary
 import se.tattooink.powerfy.ui.theme.PowerfySurface
 import se.tattooink.powerfy.ui.theme.PowerfyTextSecondary
+import se.tattooink.powerfy.util.toSekPrice
 
 @Composable
 fun CheckoutRoute(
@@ -158,13 +159,13 @@ private fun CheckoutScreen(
                 .padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            SummaryRow(label = "Subtotal", value = "$${"%.2f".format(subtotal)}")
-            SummaryRow(label = "Delivery", value = "$${"%.2f".format(selectedMethod.fee)}")
-            SummaryRow(label = "VAT (25%)", value = "$${"%.2f".format(vat)}")
+            SummaryRow(label = "Subtotal", value = subtotal.toSekPrice())
+            SummaryRow(label = "Delivery", value = selectedMethod.fee.toSekPrice())
+            SummaryRow(label = "VAT (25%)", value = vat.toSekPrice())
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(PowerfyBorder))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = "Total", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-                Text(text = "$${"%.2f".format(total)}", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = PowerfyPrimary)
+                Text(text = total.toSekPrice(), fontSize = 15.sp, fontWeight = FontWeight.Bold, color = PowerfyPrimary)
             }
         }
 
@@ -211,7 +212,7 @@ private fun DeliveryOption(method: DeliveryMethod, isSelected: Boolean, onClick:
             }
         }
         Text(
-            text = "$${"%.2f".format(method.fee)}",
+            text = method.fee.toSekPrice(),
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold,
             color = if (isSelected) PowerfyPrimary else Color.Black

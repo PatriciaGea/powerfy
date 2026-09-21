@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import se.tattooink.powerfy.domain.model.Product
 import se.tattooink.powerfy.ui.theme.PowerfyBorder
+import se.tattooink.powerfy.util.toSekPrice
 
 @Composable
 fun CartLineItem(
@@ -61,7 +62,7 @@ fun CartLineItem(
                 color = Color.Black
             )
             Text(
-                text = "$${"%.2f".format(product.price)}",
+                text = product.price.toSekPrice(),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color.Black

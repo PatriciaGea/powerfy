@@ -23,6 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import se.tattooink.powerfy.ui.components.CartLineItem
 import se.tattooink.powerfy.ui.components.PrimaryButton
 import se.tattooink.powerfy.ui.theme.PowerfyBorder
+import se.tattooink.powerfy.util.toSekPrice
 import se.tattooink.powerfy.ui.theme.PowerfyTextSecondary
 
 @Composable
@@ -85,7 +86,7 @@ private fun CartScreen(
                 }
 
                 Text(
-                    text = "Total: $${"%.2f".format(total)}",
+                    text = "Total: ${total.toSekPrice()}",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,

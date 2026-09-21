@@ -35,6 +35,7 @@ import se.tattooink.powerfy.ui.components.PrimaryButton
 import se.tattooink.powerfy.ui.components.ProductCard
 import se.tattooink.powerfy.ui.theme.PowerfyStarYellow
 import se.tattooink.powerfy.ui.theme.PowerfyTextSecondary
+import se.tattooink.powerfy.util.toSekPrice
 
 @Composable
 fun ProductDetailRoute(
@@ -123,7 +124,7 @@ private fun ProductDetailScreen(
                     }
 
                     Text(
-                        text = "$${"%.2f".format(product.price)}",
+                        text = product.price.toSekPrice(),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black

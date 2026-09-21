@@ -36,6 +36,7 @@ import se.tattooink.powerfy.ui.theme.PowerfyBorder
 import se.tattooink.powerfy.ui.theme.PowerfyPrimary
 import se.tattooink.powerfy.ui.theme.PowerfyStarYellow
 import se.tattooink.powerfy.ui.theme.PowerfyTextSecondary
+import se.tattooink.powerfy.util.toSekPrice
 
 @Composable
 fun ProductCard(
@@ -79,7 +80,7 @@ fun ProductCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "$${"%.2f".format(product.price)}",
+                text = product.price.toSekPrice(),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color(0xFF1A1A1A)
