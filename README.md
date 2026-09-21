@@ -146,11 +146,16 @@ Favorites and cart items are persisted locally with Room. Schema changes use **r
 
 ## Data sources
 
-### Products - DummyJSON
-Product catalog and images only. [DummyJSON](https://dummyjson.com/) is a free REST API for prototyping:
-
+### Products — DummyJSON
+Product catalog and images only. [API - DummyJSON](https://dummyjson.com/) is a free REST API for prototyping:
+ 
 ```
-@@ -157,24 +158,22 @@ GET /products/search?q={query}         # search
+GET /products                          # all products
+GET /products/category/smartphones     # smartphones
+GET /products/category/laptops         # laptops
+GET /products/category/tablets         # tablets
+GET /products/category/mobile-accessories  # accessories
+GET /products/search?q={query}         # search
 GET /products/{id}                     # product details
 ```
 
