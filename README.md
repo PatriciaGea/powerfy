@@ -129,22 +129,23 @@ Security measures in that backend:
 Design tokens are defined in `ui/theme/` and sourced directly from the Figma file ("Powerfy - Rebuilt (Dev Ready)"), which the author designed from scratch:
 | Token | Value |
 |---|---|
-| Primary | <span style="color:#159AD3">■</span> `#159AD3` |
-| Accent | <span style="color:#FF8026">■</span> `#FF8026` |
-| Background | <span style="color:#FFFFFF">■</span> `#FFFFFF` |
-| Surface / cards | <span style="color:#F5F7FA">■</span> `#F5F7FA` |
-| Secondary text | <span style="color:#7A7A7A">■</span> `#7A7A7A` |
-| Border | <span style="color:#E5E8EC">■</span> `#E5E8EC` |
+| Primary | ![Primary](https://img.shields.io/badge/Primary-159AD3?style=flat-square&labelColor=159AD3&color=159AD3) `#159AD3` |
+| Accent | ![Accent](https://img.shields.io/badge/Accent-FF8026?style=flat-square&labelColor=FF8026&color=FF8026) `#FF8026` |
+| Background | ![Background](https://img.shields.io/badge/Background-FFFFFF?style=flat-square&labelColor=FFFFFF&color=FFFFFF) `#FFFFFF` |
+| Surface / cards | ![Surface / cards](https://img.shields.io/badge/Surface%20%2F%20cards-F5F7FA?style=flat-square&labelColor=F5F7FA&color=F5F7FA) `#F5F7FA` |
+| Secondary text | ![Secondary text](https://img.shields.io/badge/Secondary%20text-7A7A7A?style=flat-square&labelColor=7A7A7A&color=7A7A7A) `#7A7A7A` |
+| Border | ![Border](https://img.shields.io/badge/Border-E5E8EC?style=flat-square&labelColor=E5E8EC&color=E5E8EC) `#E5E8EC` |
+
 
 ## Local storage: Room, with real migrations
 
 Favorites and cart items are persisted locally with Room. Schema changes use **real, hand-written `Migration` objects** (see `data/local/Migrations.kt`) rather than `fallbackToDestructiveMigration()`.
 
-This is a deliberate choice, not an oversight: `fallbackToDestructiveMigration()` is a common — and perfectly reasonable — shortcut *during active development*, when the schema is still changing often and no real user data exists yet to protect. It simply wipes and recreates the database on any version bump, which is fast to iterate with but **destroys existing user data** on every schema change. That trade-off stops being acceptable the moment real users have data to lose, so Powerfy uses proper migrations from early on, even pre-launch — partly to build the habit of doing it the production way, partly so a schema change never has to be revisited later under more pressure.
+ `fallbackToDestructiveMigration()`During development, the database can be recreated when the schema changes. This is fast, but it deletes existing data. Powerfy uses database migrations instead, so data is preserved when the schema changes.
 
 ## Data sources
 
-### Products — DummyJSON
+### Products - DummyJSON
 Product catalog and images only. [DummyJSON](https://dummyjson.com/) is a free REST API for prototyping:
 
 ```
@@ -157,24 +158,22 @@ GET /products/search?q={query}         # search
 GET /products/{id}                     # product details
 ```
 
-> **Note:** DummyJSON is a test/prototyping API. Write operations (create, update, delete) are simulated and not actually persisted server-side — irrelevant here since Powerfy only ever reads product data from it.
-
-### Users — Firebase
+### Users - Firebase
 - **Authentication:** email/password, Google Sign-In, and anonymous guest mode via Firebase Auth.
 - **Firestore collection:** `users/{uid}` (name, email).
 
-### Payments — Stripe (test mode), via [powerfy-backend](https://github.com/PatriciaGea/powerfy-backend)
+### Payments - Stripe (test mode), via [powerfy-backend](https://github.com/PatriciaGea/powerfy-backend)
 Checkout calls a Firebase Cloud Function to create a `PaymentIntent`, then opens Stripe's `PaymentSheet` with the returned client secret. Test card numbers (e.g. `4242 4242 4242 4242`, any future expiry, any CVC) simulate successful and failed payments without moving real money.
 
 ### A note on currency
-Product prices come straight from the DummyJSON API, which returns them in **USD**. Powerfy displays prices in USD as-is, and calculates VAT and delivery fees on top of that in the same currency — there's no hidden conversion happening. This was a deliberate scope choice for an API-driven MVP with test data, not a limitation of the app: because currency formatting is centralized in one place and the payment amount is always passed to Stripe as an explicit `amount` + `currency` pair, both the **displayed currency** and the **currency the payment is actually processed in** could be swapped to any ISO currency (SEK, EUR, GBP, ...) by changing that one value — the same is true of the **payment recipient**, since that's controlled by whichever Stripe account's keys are configured on the backend, not hardcoded in the app.
+The API provides prices in USD, which was intentionally kept for this MVP. However, the currency is centralized and can be changed to any currency, for both display and Stripe payments.
 
 ## Configuration
 
 Running this project requires a Firebase project (Authentication + Firestore enabled, Blaze plan for the Cloud Functions backend), a Stripe account with test-mode keys, and the companion [powerfy-backend](https://github.com/PatriciaGea/powerfy-backend) deployed to that same Firebase project.
 
 - `app/google-services.json` — Firebase config for the Android app (package `se.tattooink.powerfy`)
-- `local.properties` → `STRIPE_PUBLISHABLE_KEY` — Stripe test-mode publishable key, kept out of version control
+- `local.properties` → `STRIPE_PUBLISHABLE_KEY` - Stripe test-mode publishable key, kept out of version control
 - `powerfy-backend`'s `createPaymentIntent` Cloud Function must be live for the payment flow to work
 
 DummyJSON requires no key or config, it's a public, unauthenticated API used only for product data.
@@ -208,8 +207,10 @@ A few real problems hit while building this, and how they were solved — the pa
 
 ## Author
 
-**Patricia Gea** — Web / Mobile developer
+**Patricia Gea**: Web / Mobile developer
+
 Hyper Island - Yrkeshogskolan (YH) - Higher Vocational Education (HVE) - Stockholm 
+
 The Powerfy concept, brand, art design , and UI/UX design are original work, designed by Patricia Gea
 [GitHub](https://github.com/PatriciaGea)
 
